@@ -85,7 +85,7 @@ object BlockedMessagesHelper {
     fun onFilteringChanged(activity: ChatActivity, adapter: ChatActivity.ChatActivityAdapter?) {
         ChatActionsHelper.updateRevealItem(activity)
         if (adapter == null) return
-        var changed = adapter.inu_hiddenMessages.isNotEmpty() || isHideMode()
+        var changed = adapter.inu_hiddenMessages.isNotEmpty() || isHideMode() || InuConfig.HIDE_SPONSORED_MESSAGES.value
         for (msg in activity.messages) changed = rebuildIfStale(msg) || changed
         if (changed) adapter.notifyDataSetChanged(true)
     }
@@ -201,10 +201,10 @@ object BlockedMessagesHelper {
     fun refreshHidden(adapter: ChatActivity.ChatActivityAdapter, messages: ArrayList<MessageObject>) {
         val hidden = adapter.inu_hiddenMessages
         hidden.clear()
-        if (!isHideMode()) return
+        if (!isHideMode() && !InuConfig.HIDE_SPONSORED_MESSAGES.value) return
         val visibleDays = HashSet<Int>()
         for (msg in messages) {
-            if (shouldHide(msg)) hidden.add(msg)
+            if (shouldHide(msg) || (InuConfig.HIDE_SPONSORED_MESSAGES.value && msg.isSponsored())) hidden.add(msg)
             else if (!msg.isDateObject && msg.contentType != 2) visibleDays.add(msg.dateKeyInt)
         }
         var hasVisibleBelow = false

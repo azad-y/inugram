@@ -120,7 +120,19 @@ object InuConfig {
     val HIDE_STORIES = BoolItem("hide_stories", false)
 
     @JvmField
+    val HIDE_PROXY_SPONSOR_CHANNEL = BoolItem("hide_proxy_sponsor_channel", false)
+
+    @JvmField
+    val HIDE_SPONSORED_MESSAGES = BoolItem("hide_sponsored_messages", false)
+
+    @JvmField
     val SHOW_SECONDS = BoolItem("show_seconds", false)
+
+    @JvmField
+    val JALALI_DATES = BoolItem("jalali_dates", false)
+
+    @JvmField
+    val JALALI_PERSIAN_DIGITS = BoolItem("jalali_persian_digits", true)
 
     @JvmField
     val DISABLE_ROUNDING = BoolItem("disable_rounding", false)
