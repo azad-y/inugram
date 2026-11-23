@@ -1,6 +1,7 @@
 package desu.inugram.ui.settings
 
 import android.view.View
+import android.text.InputType
 import androidx.core.content.edit
 import desu.inugram.InuConfig
 import desu.inugram.SearchRegistry
@@ -10,6 +11,7 @@ import desu.inugram.helpers.plugins.telegram.PluginTranslation
 // #endif
 import desu.inugram.helpers.translate.TranslationProviderHelper
 import desu.inugram.ui.settings.TranslationTargetActivity
+import desu.inugram.ui.showInputDialog
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.LocaleController
 import org.telegram.messenger.MessagesController
@@ -35,25 +37,22 @@ class TranslatorSettingsActivity : SettingsPageActivity() {
     }
 
     override fun fillItems(items: ArrayList<UItem>, adapter: UniversalAdapter) {
-        // #if PLUGINS
         items.add(
             UItem.asButton(
                 BUTTON_PROVIDER,
-                LocaleController.getString(R.string.InuTranslationProvider),
+                "Translation provider",
                 providerLabel(),
             )
         )
-        items.add(
-            UItem.asShadow(
-                AndroidUtilities.replaceArrows(
-                    AndroidUtilities.replaceSingleTag(LocaleController.getString(R.string.InuTranslationProviderInfo)) {
-                        presentFragment(PluginsActivity())
-                    },
-                    true,
-                )
-            )
-        )
-        // #endif
+        items.add(UItem.asButton(BUTTON_MICROSOFT_KEY, "Microsoft Translator API key",
+            if (TranslationSecrets.get("microsoft_key").isBlank()) "Not configured" else "Configured"))
+        items.add(UItem.asButton(BUTTON_MICROSOFT_REGION, "Microsoft Translator region",
+            TranslationSecrets.get("microsoft_region").ifBlank { "Optional for global resources" }))
+        items.add(UItem.asButton(BUTTON_OPENAI_KEY, "OpenAI API key",
+            if (TranslationSecrets.get("openai_key").isBlank()) "Not configured" else "Configured"))
+        items.add(UItem.asButton(BUTTON_OPENAI_MODEL, "OpenAI model",
+            TranslationSecrets.get("openai_model").ifBlank { "gpt-4.1-mini" }))
+        items.add(UItem.asShadow("Microsoft and OpenAI receive message text when selected. API usage may be billed by the provider. Keys are encrypted on this device and are not included in settings export."))
         items.add(
             UItem.asCheck(
                 TOGGLE_SHOW_TRANSLATE_BUTTON,
@@ -184,25 +183,56 @@ class TranslatorSettingsActivity : SettingsPageActivity() {
 
             BUTTON_DO_NOT_TRANSLATE -> presentFragment(RestrictedLanguagesSelectActivity())
 
-            // #if PLUGINS
             BUTTON_PROVIDER -> showProviderDialog()
-            // #endif
+            BUTTON_MICROSOFT_KEY -> editSecret("Microsoft Translator API key", "microsoft_key", true)
+            BUTTON_MICROSOFT_REGION -> editSecret("Microsoft Translator region", "microsoft_region", false)
+            BUTTON_OPENAI_KEY -> editSecret("OpenAI API key", "openai_key", true)
+            BUTTON_OPENAI_MODEL -> editSecret("OpenAI model", "openai_model", false)
 
             BUTTON_TARGET_LANG -> presentFragment(TranslationTargetActivity())
         }
     }
 
-    // #if PLUGINS
     private fun showProviderDialog() {
-        val providers = PluginTranslation.providers
+        val providers = mutableListOf(
+            RadioDialogBuilder.Item("Google Translate"),
+            RadioDialogBuilder.Item("Microsoft Translator"),
+            RadioDialogBuilder.Item("ChatGPT (OpenAI)"),
+        )
+        // #if PLUGINS
+        PluginTranslation.providers.forEach {
+            providers.add(RadioDialogBuilder.Item(it.name,
+                LocaleController.formatString(R.string.InuTranslationProviderFromPlugin, it.session.manifest.name)))
+        }
+        // #endif
         val selected = InuConfig.TRANSLATION_PROVIDER.value
-        val items = listOf(RadioDialogBuilder.Item(LocaleController.getString(R.string.InuTranslationProviderTelegram))) +
-            providers.map { RadioDialogBuilder.Item(it.name, LocaleController.formatString(R.string.InuTranslationProviderFromPlugin, it.session.manifest.name)) }
-        val selectedIndex = if (selected.isEmpty()) 0 else providers.indexOfFirst { it.key == selected }.let { if (it < 0) -1 else it + 1 }
+        val selectedIndex = when (selected) {
+            "" -> 0
+            ExternalTranslateHelper.MICROSOFT -> 1
+            ExternalTranslateHelper.OPENAI -> 2
+            else -> {
+                // #if PLUGINS
+                PluginTranslation.providers.indexOfFirst { it.key == selected }.let { if (it < 0) -1 else it + 3 }
+                // #else
+                -1
+                // #endif
+            }
+        }
         val dialog = RadioDialogBuilder(context, resourceProvider)
-            .setTitle(LocaleController.getString(R.string.InuTranslationProvider))
-            .setItems(items, selectedIndex) { _, index ->
-                InuConfig.TRANSLATION_PROVIDER.value = if (index == 0) "" else providers[index - 1].key
+            .setTitle("Translation provider")
+            .setItems(providers, selectedIndex) { _, index ->
+                InuConfig.TRANSLATION_PROVIDER.value = when (index) {
+                    0 -> ""
+                    1 -> ExternalTranslateHelper.MICROSOFT
+                    2 -> ExternalTranslateHelper.OPENAI
+                    else -> {
+                        // #if PLUGINS
+                        PluginTranslation.providers.getOrNull(index - 3)?.key ?: ""
+                        // #else
+                        ""
+                        // #endif
+                    }
+                }
                 listView?.adapter?.update(true)
                 NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.updateSearchSettings)
             }
@@ -211,14 +241,34 @@ class TranslatorSettingsActivity : SettingsPageActivity() {
         showDialog(dialog)
     }
 
-    private fun providerLabel(): String {
-        val selected = InuConfig.TRANSLATION_PROVIDER.value
-        if (selected.isEmpty()) return LocaleController.getString(R.string.InuTranslationProviderTelegram)
-        return PluginTranslation.findProvider(selected)?.name
-            ?: LocaleController.getString(R.string.InuTranslationProviderUnavailable)
+    private fun providerLabel(): String = when (InuConfig.TRANSLATION_PROVIDER.value) {
+        "" -> "Google Translate"
+        ExternalTranslateHelper.MICROSOFT -> "Microsoft Translator"
+        ExternalTranslateHelper.OPENAI -> "ChatGPT (OpenAI)"
+        else -> {
+            // #if PLUGINS
+            PluginTranslation.findProvider(InuConfig.TRANSLATION_PROVIDER.value)?.name
+                ?: LocaleController.getString(R.string.InuTranslationProviderUnavailable)
+            // #else
+            LocaleController.getString(R.string.InuTranslationProviderUnavailable)
+            // #endif
+        }
     }
 
-    // #endif
+    private fun editSecret(title: String, key: String, password: Boolean) {
+        val inputType = if (password) InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+            else InputType.TYPE_CLASS_TEXT
+        showInputDialog(context, resourceProvider, title,
+            if (password) "Paste your API key" else "Enter value (leave empty to clear)",
+            if (password) null else TranslationSecrets.get(key),
+            inputType = inputType,
+            showDialog = { showDialog(it) },
+        ) { value ->
+            TranslationSecrets.set(key, value)
+            listView?.adapter?.update(true)
+            true
+        }
+    }
 
     private fun targetLangLabel(): String {
         if (!MessagesController.getGlobalMainSettings().contains("translate_to_language")) {
@@ -248,6 +298,10 @@ class TranslatorSettingsActivity : SettingsPageActivity() {
         private val BUTTON_DO_NOT_TRANSLATE = InuUtils.generateId()
         private val BUTTON_TARGET_LANG = InuUtils.generateId()
         private val BUTTON_PROVIDER = InuUtils.generateId()
+        private val BUTTON_MICROSOFT_KEY = InuUtils.generateId()
+        private val BUTTON_MICROSOFT_REGION = InuUtils.generateId()
+        private val BUTTON_OPENAI_KEY = InuUtils.generateId()
+        private val BUTTON_OPENAI_MODEL = InuUtils.generateId()
 
         @JvmField val PAGE = SearchRegistry.Page(
             slug = "translator",
@@ -255,9 +309,9 @@ class TranslatorSettingsActivity : SettingsPageActivity() {
             iconRes = R.drawable.msg_translate,
             factory = ::TranslatorSettingsActivity,
             entries = listOf(
-                // #if PLUGINS
                 SearchRegistry.Entry("translation-provider", R.string.InuTranslationProvider, BUTTON_PROVIDER),
-                // #endif
+                SearchRegistry.Entry("microsoft-translator-key", R.string.InuTranslator, BUTTON_MICROSOFT_KEY),
+                SearchRegistry.Entry("openai-translation-key", R.string.InuTranslator, BUTTON_OPENAI_KEY),
                 SearchRegistry.Entry("show-translate-button", R.string.ShowTranslateButton, TOGGLE_SHOW_TRANSLATE_BUTTON),
                 SearchRegistry.Entry("show-translate-chat-button", R.string.ShowTranslateChatButton, TOGGLE_SHOW_TRANSLATE_CHAT_BUTTON),
                 SearchRegistry.Entry("translation-target", R.string.InuTranslationTarget, BUTTON_TARGET_LANG),
