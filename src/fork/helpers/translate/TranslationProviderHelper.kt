@@ -25,6 +25,8 @@ import org.telegram.tgnet.tl.TL_iv
  * keep their [org.telegram.tgnet.ConnectionsManager] token, so stock cancels them as it does any other.
  */
 object TranslationProviderHelper {
+    private val sourceLanguages = Collections.synchronizedMap(WeakHashMap<TLRPC.TL_textWithEntities, String>())
+
     // #if PLUGINS
     private class Request {
         /** scheduler only */
@@ -32,9 +34,7 @@ object TranslationProviderHelper {
     }
 
     private val requests = ConcurrentHashMap<Long, Request>()
-    private val sourceLanguages = Collections.synchronizedMap(WeakHashMap<TLRPC.TL_textWithEntities, String>())
     private val requestProviders = Collections.synchronizedMap(WeakHashMap<TLObject, String>())
-
     // #endif
 
     private class RichTranslationRequest(
@@ -45,10 +45,8 @@ object TranslationProviderHelper {
 
     @JvmStatic
     fun setSourceLanguage(text: TLRPC.TL_textWithEntities, language: String?) {
-        // #if PLUGINS
         if (language.isNullOrEmpty() || language == TranslateController.UNKNOWN_LANGUAGE) sourceLanguages.remove(text)
         else sourceLanguages[text] = language
-        // #endif
     }
 
     /** [provider] overrides the user's choice for this request, empty for Telegram */
@@ -77,15 +75,16 @@ object TranslationProviderHelper {
     /** [provider] as in [setRequestProvider] */
     @JvmStatic
     fun isActive(provider: String?): Boolean =
-        // #if PLUGINS
-        InuConfig.PLUGINS_ENABLED.value && (provider ?: InuConfig.TRANSLATION_PROVIDER.value).isNotEmpty()
-        // #else
-        false
-        // #endif
+        provider.isNullOrEmpty() ||
+            // #if PLUGINS
+            InuConfig.PLUGINS_ENABLED.value && (provider ?: InuConfig.TRANSLATION_PROVIDER.value).isNotEmpty()
+            // #else
+            false
+            // #endif
 
     /** Premium's chat translation, which a provider of the user's own does not need */
     @JvmStatic
-    fun canTranslateChats(account: Int): Boolean = isActive() || UserConfig.getInstance(account).isPremium
+    fun canTranslateChats(account: Int): Boolean = true
 
     /** stageQueue, from `ConnectionsManager.sendRequestInternal` */
     @JvmStatic
@@ -98,54 +97,104 @@ object TranslationProviderHelper {
     ): Boolean {
         // #if PLUGINS
         val provider = requestProviders.remove(request)
-        if (!isActive(provider)) {
-            if (request !is RichTranslationRequest) return false
-            Utilities.stageQueue.postRunnable {
-                val error = createError("TRANSLATION_PROVIDER_FAILED")
-                onComplete?.run(null, error)
-                onCompleteTimestamp?.run(null, error, 0)
+        val pluginKey = provider ?: InuConfig.TRANSLATION_PROVIDER.value
+        if (InuConfig.PLUGINS_ENABLED.value && pluginKey.isNotEmpty()) {
+            if (request !is RichTranslationRequest && PluginRpc.isBypassed(request)) return false
+            val complete = { response: TLObject?, error: TLRPC.TL_error? ->
+                Utilities.stageQueue.postRunnable {
+                    onComplete?.run(response, error)
+                    onCompleteTimestamp?.run(response, error, 0)
+                }
+            }
+            val texts: List<TLRPC.TL_textWithEntities>
+            val from: List<String?>
+            val tone: String?
+            val toLanguage: String
+            val createResponse: (List<TLRPC.TL_textWithEntities>) -> TLObject?
+            when (request) {
+                is TLRPC.TL_messages_translateText -> {
+                    if (request.text.isEmpty()) {
+                        PluginLog.HOST.w("translation", "a translation by message id cannot reach a translation provider")
+                        complete(null, createError("TRANSLATION_PROVIDER_NEEDS_TEXT"))
+                        return true
+                    }
+                    texts = request.text
+                    from = request.text.map { sourceLanguages[it] }
+                    tone = request.tone
+                    toLanguage = request.to_lang
+                    createResponse = { TLRPC.TL_messages_translateResult().apply { result = ArrayList(it) } }
+                }
+                is RichTranslationRequest -> {
+                    val translator = RichMessageTranslator.create(account, request.messages, request.languages)
+                    if (translator == null) {
+                        complete(null, createError("TRANSLATION_PROVIDER_FAILED"))
+                        return true
+                    }
+                    if (translator.texts.isEmpty()) {
+                        complete(TLRPC.TL_messages_translatedRichMessage().apply { result = translator.messages }, null)
+                        return true
+                    }
+                    texts = translator.texts
+                    from = translator.sourceLanguages
+                    tone = null
+                    toLanguage = request.toLanguage
+                    createResponse = { translated ->
+                        translator.apply(translated)?.let { messages ->
+                            TLRPC.TL_messages_translatedRichMessage().apply { result = messages }
+                        }
+                    }
+                }
+                else -> return false
+            }
+            val requestKey = (account.toLong() shl 32) or (token.toLong() and 0xffffffffL)
+            val entry = Request()
+            requests[requestKey] = entry
+            EngineDispatch.scheduler.postRunnable {
+                if (requests[requestKey] !== entry) return@postRunnable
+                entry.dispatchId = PluginTranslation.translate(pluginKey, texts, from, toLanguage, tone) { translated ->
+                    if (!requests.remove(requestKey, entry)) return@translate
+                    val response = translated?.let(createResponse)
+                    if (response != null) complete(response, null) else complete(null, createError("TRANSLATION_PROVIDER_FAILED"))
+                }
             }
             return true
         }
-        if (request !is RichTranslationRequest && PluginRpc.isBypassed(request)) return false
-        val key = provider ?: InuConfig.TRANSLATION_PROVIDER.value
-        val complete = { response: TLObject?, error: TLRPC.TL_error? ->
-            Utilities.stageQueue.postRunnable {
-                onComplete?.run(response, error)
-                onCompleteTimestamp?.run(response, error, 0)
-            }
-        }
+        // #endif
+        return maybeTranslateWithGoogle(account, token, request, onComplete, onCompleteTimestamp)
+    }
+
+    private fun maybeTranslateWithGoogle(
+        account: Int,
+        token: Int,
+        request: TLObject,
+        onComplete: RequestDelegate?,
+        onCompleteTimestamp: RequestDelegateTimestamp?,
+    ): Boolean {
         val texts: List<TLRPC.TL_textWithEntities>
         val from: List<String?>
-        val tone: String?
         val toLanguage: String
         val createResponse: (List<TLRPC.TL_textWithEntities>) -> TLObject?
         when (request) {
             is TLRPC.TL_messages_translateText -> {
-                if (request.text.isEmpty()) {
-                    PluginLog.HOST.w("translation", "a translation by message id cannot reach a translation provider")
-                    complete(null, createError("TRANSLATION_PROVIDER_NEEDS_TEXT"))
-                    return true
-                }
+                if (request.text.isEmpty()) return false
                 texts = request.text
                 from = request.text.map { sourceLanguages[it] }
-                tone = request.tone
                 toLanguage = request.to_lang
                 createResponse = { TLRPC.TL_messages_translateResult().apply { result = ArrayList(it) } }
             }
             is RichTranslationRequest -> {
                 val translator = RichMessageTranslator.create(account, request.messages, request.languages)
-                if (translator == null) {
-                    complete(null, createError("TRANSLATION_PROVIDER_FAILED"))
-                    return true
-                }
+                    ?: return false
                 if (translator.texts.isEmpty()) {
-                    complete(TLRPC.TL_messages_translatedRichMessage().apply { result = translator.messages }, null)
+                    val response = TLRPC.TL_messages_translatedRichMessage().apply { result = translator.messages }
+                    Utilities.stageQueue.postRunnable {
+                        onComplete?.run(response, null)
+                        onCompleteTimestamp?.run(response, null, 0)
+                    }
                     return true
                 }
                 texts = translator.texts
                 from = translator.sourceLanguages
-                tone = null
                 toLanguage = request.toLanguage
                 createResponse = { translated ->
                     translator.apply(translated)?.let { messages ->
@@ -155,26 +204,22 @@ object TranslationProviderHelper {
             }
             else -> return false
         }
-        val requestKey = (account.toLong() shl 32) or (token.toLong() and 0xffffffffL)
-        val entry = Request()
-        requests[requestKey] = entry
-        EngineDispatch.scheduler.postRunnable {
-            if (requests[requestKey] !== entry) return@postRunnable
-            entry.dispatchId = PluginTranslation.translate(key, texts, from, toLanguage, tone) { translated ->
-                if (!requests.remove(requestKey, entry)) return@translate
-                val response = translated?.let(createResponse)
-                if (response != null) complete(response, null) else complete(null, createError("TRANSLATION_PROVIDER_FAILED"))
+
+        GoogleTranslateHelper.translate(account, token, texts, from, toLanguage) { translated ->
+            val response = translated?.let(createResponse)
+            val error = if (response == null) createError("GOOGLE_TRANSLATE_FAILED") else null
+            Utilities.stageQueue.postRunnable {
+                onComplete?.run(response, error)
+                onCompleteTimestamp?.run(response, error, 0)
             }
         }
         return true
-        // #else
-        return false
-        // #endif
     }
 
     /** stageQueue, from `ConnectionsManager.cancelRequest`. False for a token this did not answer */
     @JvmStatic
     fun cancelRequest(account: Int, token: Int): Boolean {
+        if (GoogleTranslateHelper.cancel(account, token)) return true
         // #if PLUGINS
         val entry = requests.remove((account.toLong() shl 32) or (token.toLong() and 0xffffffffL)) ?: return false
         EngineDispatch.scheduler.postRunnable { PluginTranslation.cancel(entry.dispatchId) }
