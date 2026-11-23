@@ -38,6 +38,21 @@ import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
 
 object TranslateHelper {
+    /** Start automatic translation when a broadcast channel is opened. */
+    @JvmStatic
+    fun onChatResume(activity: ChatActivity) {
+        if (!InuConfig.AUTO_TRANSLATE_CHANNELS.value) return
+        val dialogId = activity.dialogId
+        if (dialogId >= 0) return
+        val account = activity.currentAccount
+        val chat = MessagesController.getInstance(account).getChat(-dialogId) ?: return
+        if (!chat.broadcast) return
+        val controller = MessagesController.getInstance(account).translateController
+        if (!controller.isTranslatingDialog(dialogId)) {
+            controller.toggleTranslatingDialog(dialogId, true)
+        }
+    }
+
     private const val ORIGINAL_SEPARATOR = "\n\n--------\n\n"
 
     // dialog id -> message ids whose body is manually translated
