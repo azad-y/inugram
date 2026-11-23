@@ -115,6 +115,16 @@ index 0000000..0000000 100644
              chat != null && chat.autotranslation
          );
      }
+@@ -101,6 +101,10 @@ public class TranslateController extends BaseController {
+     public boolean isTranslatingDialog(long dialogId) {
+         return isFeatureAvailable(dialogId) && translatingDialogs.get(dialogId, isChatAutoTranslated(dialogId));
+     }
+ 
++    public boolean hasDialogTranslationPreference(long dialogId) {
++        return translatingDialogs.indexOfKey(dialogId) >= 0;
++    }
++
+     public void toggleTranslatingDialog(long dialogId) {
 @@ -109,7 +110,7 @@ public class TranslateController extends BaseController {
      private Boolean contextTranslateEnabled;
  
