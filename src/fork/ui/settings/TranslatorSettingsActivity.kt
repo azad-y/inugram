@@ -100,6 +100,12 @@ class TranslatorSettingsActivity : SettingsPageActivity() {
         )
         items.add(
             UItem.asCheck(
+                TOGGLE_AUTO_TRANSLATE_CHANNELS,
+                "Automatically translate channel messages",
+            ).setChecked(InuConfig.AUTO_TRANSLATE_CHANNELS.value)
+        )
+        items.add(
+            UItem.asCheck(
                 TOGGLE_KEEP_ORIGINAL,
                 LocaleController.getString(R.string.InuKeepOriginalAfterTranslation),
             ).setChecked(InuConfig.KEEP_ORIGINAL_AFTER_TRANSLATION.value)
@@ -122,6 +128,11 @@ class TranslatorSettingsActivity : SettingsPageActivity() {
 
             TOGGLE_TRANSLATE_WEB_PREVIEWS -> {
                 val new = InuConfig.TRANSLATE_WEB_PREVIEWS.toggle()
+                (view as? TextCheckCell)?.isChecked = new
+            }
+
+            TOGGLE_AUTO_TRANSLATE_CHANNELS -> {
+                val new = InuConfig.AUTO_TRANSLATE_CHANNELS.toggle()
                 (view as? TextCheckCell)?.isChecked = new
             }
 
@@ -221,6 +232,7 @@ class TranslatorSettingsActivity : SettingsPageActivity() {
     companion object {
         private val TOGGLE_IN_PLACE_TRANSLATION = InuUtils.generateId()
         private val TOGGLE_TRANSLATE_WEB_PREVIEWS = InuUtils.generateId()
+        private val TOGGLE_AUTO_TRANSLATE_CHANNELS = InuUtils.generateId()
         private val TOGGLE_KEEP_ORIGINAL = InuUtils.generateId()
         private val TOGGLE_AUTO_DETECT_LANG = InuUtils.generateId()
         private val TOGGLE_SHOW_TRANSLATE_BUTTON = InuUtils.generateId()
