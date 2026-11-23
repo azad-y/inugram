@@ -48,6 +48,7 @@ object TranslateHelper {
         val chat = MessagesController.getInstance(account).getChat(-dialogId) ?: return
         if (!chat.broadcast) return
         val controller = MessagesController.getInstance(account).translateController
+        if (!controller.isFeatureAvailable(dialogId)) return
         if (!controller.isTranslatingDialog(dialogId)) {
             controller.toggleTranslatingDialog(dialogId, true)
         }
