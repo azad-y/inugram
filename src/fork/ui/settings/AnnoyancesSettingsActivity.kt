@@ -54,7 +54,7 @@ class AnnoyancesSettingsActivity : SettingsPageActivity() {
         items.add(
             UItem.asCheck(
                 TOGGLE_HIDE_SPONSORED_MESSAGES,
-                "Hide sponsored messages and video ads",
+                LocaleController.getString(R.string.InuHideSponsoredMessages),
             ).setChecked(InuConfig.HIDE_SPONSORED_MESSAGES.value)
         )
         items.add(
