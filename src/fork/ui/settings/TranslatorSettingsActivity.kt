@@ -197,10 +197,10 @@ class TranslatorSettingsActivity : SettingsPageActivity() {
             BUTTON_GOOGLE_GUIDE -> openHelp("https://translate.google.com/")
             BUTTON_MICROSOFT_GUIDE -> openHelp("https://learn.microsoft.com/azure/ai-services/translator/create-translator-resource")
             BUTTON_OPENAI_GUIDE -> openHelp("https://platform.openai.com/api-keys")
-            BUTTON_MICROSOFT_KEY -> editSecret("Microsoft Translator API key", "microsoft_key", true)
-            BUTTON_MICROSOFT_REGION -> editSecret("Microsoft Translator region", "microsoft_region", false)
-            BUTTON_OPENAI_KEY -> editSecret("OpenAI API key", "openai_key", true)
-            BUTTON_OPENAI_MODEL -> editSecret("OpenAI model", "openai_model", false)
+            BUTTON_MICROSOFT_KEY -> editSecret("کلید API مترجم مایکروسافت", "microsoft_key", true)
+            BUTTON_MICROSOFT_REGION -> editSecret("ناحیه (Region) مایکروسافت", "microsoft_region", false)
+            BUTTON_OPENAI_KEY -> editSecret("کلید API چت‌جی‌پی‌تی (OpenAI)", "openai_key", true)
+            BUTTON_OPENAI_MODEL -> editSecret("نام مدل OpenAI", "openai_model", false)
 
             BUTTON_TARGET_LANG -> presentFragment(TranslationTargetActivity())
         }
@@ -280,7 +280,7 @@ class TranslatorSettingsActivity : SettingsPageActivity() {
         val inputType = if (password) InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
             else InputType.TYPE_CLASS_TEXT
         showInputDialog(context, resourceProvider, title,
-            if (password) "Paste your API key" else "Enter value (leave empty to clear)",
+            if (password) "کلید API را وارد یا جای‌گذاری کن" else "مقدار را وارد کن؛ برای پاک‌کردن خالی بگذار",
             if (password) null else TranslationSecrets.get(key),
             inputType = inputType,
             showDialog = { showDialog(it) },
