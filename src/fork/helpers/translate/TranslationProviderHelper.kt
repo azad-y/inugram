@@ -74,15 +74,13 @@ object TranslationProviderHelper {
 
     /** [provider] as in [setRequestProvider] */
     @JvmStatic
-    fun isActive(provider: String?): Boolean {
-        val selected = provider ?: InuConfig.TRANSLATION_PROVIDER.value
-        if (selected.isEmpty() || selected == ExternalTranslateHelper.MICROSOFT || selected == ExternalTranslateHelper.OPENAI) return true
-        // #if PLUGINS
-        return InuConfig.PLUGINS_ENABLED.value
-        // #else
-        return false
-        // #endif
-    }
+    fun isActive(provider: String?): Boolean =
+        provider.isNullOrEmpty() ||
+            // #if PLUGINS
+            InuConfig.PLUGINS_ENABLED.value && (provider ?: InuConfig.TRANSLATION_PROVIDER.value).isNotEmpty()
+            // #else
+            false
+            // #endif
 
     /** Premium's chat translation, which a provider of the user's own does not need */
     @JvmStatic
@@ -97,17 +95,10 @@ object TranslationProviderHelper {
         onComplete: RequestDelegate?,
         onCompleteTimestamp: RequestDelegateTimestamp?,
     ): Boolean {
-        val selectedProvider: String
         // #if PLUGINS
         val provider = requestProviders.remove(request)
-        selectedProvider = provider ?: InuConfig.TRANSLATION_PROVIDER.value
-        val pluginKey = selectedProvider
-        // #else
-        selectedProvider = InuConfig.TRANSLATION_PROVIDER.value
-        // #endif
-        // #if PLUGINS
-        if (InuConfig.PLUGINS_ENABLED.value && pluginKey.isNotEmpty() &&
-            pluginKey != ExternalTranslateHelper.MICROSOFT && pluginKey != ExternalTranslateHelper.OPENAI) {
+        val pluginKey = provider ?: InuConfig.TRANSLATION_PROVIDER.value
+        if (InuConfig.PLUGINS_ENABLED.value && pluginKey.isNotEmpty()) {
             if (request !is RichTranslationRequest && PluginRpc.isBypassed(request)) return false
             val complete = { response: TLObject?, error: TLRPC.TL_error? ->
                 Utilities.stageQueue.postRunnable {
@@ -169,16 +160,15 @@ object TranslationProviderHelper {
             return true
         }
         // #endif
-        return maybeTranslateWithBuiltIn(account, token, request, onComplete, onCompleteTimestamp, selectedProvider)
+        return maybeTranslateWithGoogle(account, token, request, onComplete, onCompleteTimestamp)
     }
 
-    private fun maybeTranslateWithBuiltIn(
+    private fun maybeTranslateWithGoogle(
         account: Int,
         token: Int,
         request: TLObject,
         onComplete: RequestDelegate?,
         onCompleteTimestamp: RequestDelegateTimestamp?,
-        provider: String,
     ): Boolean {
         val texts: List<TLRPC.TL_textWithEntities>
         val from: List<String?>
@@ -215,18 +205,13 @@ object TranslationProviderHelper {
             else -> return false
         }
 
-        val callback: (List<TLRPC.TL_textWithEntities>?) -> Unit = { translated ->
+        GoogleTranslateHelper.translate(account, token, texts, from, toLanguage) { translated ->
             val response = translated?.let(createResponse)
-            val error = if (response == null) createError("TRANSLATION_PROVIDER_FAILED") else null
+            val error = if (response == null) createError("GOOGLE_TRANSLATE_FAILED") else null
             Utilities.stageQueue.postRunnable {
                 onComplete?.run(response, error)
                 onCompleteTimestamp?.run(response, error, 0)
             }
-        }
-        if (provider == ExternalTranslateHelper.MICROSOFT || provider == ExternalTranslateHelper.OPENAI) {
-            ExternalTranslateHelper.translate(account, token, provider, texts, toLanguage, callback)
-        } else {
-            GoogleTranslateHelper.translate(account, token, texts, from, toLanguage, callback)
         }
         return true
     }
@@ -235,7 +220,6 @@ object TranslationProviderHelper {
     @JvmStatic
     fun cancelRequest(account: Int, token: Int): Boolean {
         if (GoogleTranslateHelper.cancel(account, token)) return true
-        if (ExternalTranslateHelper.cancel(account, token)) return true
         // #if PLUGINS
         val entry = requests.remove((account.toLong() shl 32) or (token.toLong() and 0xffffffffL)) ?: return false
         EngineDispatch.scheduler.postRunnable { PluginTranslation.cancel(entry.dispatchId) }
