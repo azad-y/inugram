@@ -1024,4 +1024,5 @@
     <string name="InuLinkedChatsInfo">یک گفتگو را به فهرست گفتگوهای حساب دیگری اضافه کنید و بدون جابه‌جایی بین حساب‌ها، از همان‌جا به آن دسترسی داشته باشید.</string>
     <string name="InuLinkedChatsAdd">افزودن به حساب</string>
     <string name="InuLinkedChatsRemove">حذف از این حساب</string>
+    <string name="InuAutoTranslateChannels">ترجمهٔ خودکار پیام‌های کانال‌ها</string>
 </resources>
