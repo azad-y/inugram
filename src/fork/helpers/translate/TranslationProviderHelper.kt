@@ -97,10 +97,15 @@ object TranslationProviderHelper {
         onComplete: RequestDelegate?,
         onCompleteTimestamp: RequestDelegateTimestamp?,
     ): Boolean {
-        val provider = requestProviders.remove(request)
-        val selectedProvider = provider ?: InuConfig.TRANSLATION_PROVIDER.value
+        val selectedProvider: String
         // #if PLUGINS
+        val provider = requestProviders.remove(request)
+        selectedProvider = provider ?: InuConfig.TRANSLATION_PROVIDER.value
         val pluginKey = selectedProvider
+        // #else
+        selectedProvider = InuConfig.TRANSLATION_PROVIDER.value
+        // #endif
+        // #if PLUGINS
         if (InuConfig.PLUGINS_ENABLED.value && pluginKey.isNotEmpty() &&
             pluginKey != ExternalTranslateHelper.MICROSOFT && pluginKey != ExternalTranslateHelper.OPENAI) {
             if (request !is RichTranslationRequest && PluginRpc.isBypassed(request)) return false
