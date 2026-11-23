@@ -453,3 +453,4 @@ bugfix/webm-stream-lost-wakeup.patch
 bugfix/xml-referenced-strings.patch
 feature/jalali-dates.patch
 debloat/hide-proxy-sponsor-channel.patch
+debloat/hide-sponsored-messages.patch
