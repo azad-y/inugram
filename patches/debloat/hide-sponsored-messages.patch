@@ -4,9 +4,9 @@ Date: Mon, 23 Nov 2026 00:00:00 +0000
 Subject: [PATCH] add a preference to hide sponsored bot and video ads
 
 ---
- .../org/telegram/messenger/video/VideoAds.java |  4 ++++
+ .../org/telegram/messenger/video/VideoAds.java |  8 ++++++++
  .../org/telegram/ui/bots/BotAdView.java        |  5 +++++
- 2 files changed, 9 insertions(+)
+ 2 files changed, 13 insertions(+)
 
 diff --git a/TMessagesProj/src/main/java/org/telegram/ui/bots/BotAdView.java b/TMessagesProj/src/main/java/org/telegram/ui/bots/BotAdView.java
 index 0000000..0000000 100644
@@ -28,7 +28,14 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/messenger/video/VideoAds.j
 index 0000000..0000000 100644
 --- a/TMessagesProj/src/main/java/org/telegram/messenger/video/VideoAds.java
 +++ b/TMessagesProj/src/main/java/org/telegram/messenger/video/VideoAds.java
-@@ -166,6 +166,10 @@ public class VideoAds {
+@@ -120,6 +120,10 @@ public class VideoAds {
+     private void init(BulletinFactory bulletinFactory) {
++        if (desu.inugram.InuConfig.HIDE_SPONSORED_MESSAGES.getValue()) {
++            loaded = true;
++            return;
++        }
+         this.bulletinFactory = bulletinFactory;
+@@ -166,6 +170,10 @@ public class VideoAds {
      private int requestId;
      private boolean loading, loaded;
      private void load() {
