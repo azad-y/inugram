@@ -52,6 +52,12 @@ class AnnoyancesSettingsActivity : SettingsPageActivity() {
 
     override fun fillItems(items: ArrayList<UItem>, adapter: UniversalAdapter) {
         items.add(
+            UItem.asCheck(
+                TOGGLE_HIDE_SPONSORED_MESSAGES,
+                "Hide sponsored messages and video ads",
+            ).setChecked(InuConfig.HIDE_SPONSORED_MESSAGES.value)
+        )
+        items.add(
             mkTwoLineCheckItem(
                 TOGGLE_HIDE_STORIES,
                 R.string.InuHideStories,
@@ -169,6 +175,11 @@ class AnnoyancesSettingsActivity : SettingsPageActivity() {
         if (aiFeaturesGroup.handleClick(item, view) { listView.adapter.update(true) }) return
         if (hideSuggestionsGroup.handleClick(item, view) { listView.adapter.update(true) }) return
         when (item.id) {
+            TOGGLE_HIDE_SPONSORED_MESSAGES -> {
+                val new = InuConfig.HIDE_SPONSORED_MESSAGES.toggle()
+                (view as? TextCheckCell)?.isChecked = new
+            }
+
             TOGGLE_HIDE_STORIES -> {
                 val new = InuConfig.HIDE_STORIES.toggle()
                 (view as? NotificationsCheckCell)?.isChecked = new
@@ -321,6 +332,7 @@ class AnnoyancesSettingsActivity : SettingsPageActivity() {
     }
 
     companion object {
+        private val TOGGLE_HIDE_SPONSORED_MESSAGES = InuUtils.generateId()
         private val TOGGLE_HIDE_STORIES = InuUtils.generateId()
         private val TOGGLE_HIDE_TRENDING_STICKERS = InuUtils.generateId()
         private val TOGGLE_HIDE_REPOST_TO_STORY = InuUtils.generateId()
