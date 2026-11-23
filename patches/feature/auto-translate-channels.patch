@@ -1,0 +1,38 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Inugram contributors <dev@inugram>
+Date: Mon, 23 Nov 2026 00:00:00 +0000
+Subject: [PATCH] automatically translate opened broadcast channels when enabled
+
+---
+ .../org/telegram/messenger/TranslateController.java | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
+
+diff --git a/TMessagesProj/src/main/java/org/telegram/messenger/TranslateController.java b/TMessagesProj/src/main/java/org/telegram/messenger/TranslateController.java
+index 0000000..0000000 100644
+--- a/TMessagesProj/src/main/java/org/telegram/messenger/TranslateController.java
++++ b/TMessagesProj/src/main/java/org/telegram/messenger/TranslateController.java
+@@ -111,7 +111,7 @@ public class TranslateController extends BaseController {
+     public boolean isChatTranslateEnabled() {
+-        if (!getMessagesController().isTranslationsAutoEnabled() && !desu.inugram.helpers.translate.TranslationProviderHelper.isActive()) {
++        if (!getMessagesController().isTranslationsAutoEnabled() && !desu.inugram.helpers.translate.TranslationProviderHelper.isActive() && !desu.inugram.InuConfig.AUTO_TRANSLATE_CHANNELS.getValue()) {
+             return false;
+         }
+         if (chatTranslateEnabled == null) {
+@@ -770,6 +770,16 @@ public class TranslateController extends BaseController {
+         }
+         final long dialogId = messageObject.getDialogId();
++        if (
++            desu.inugram.InuConfig.AUTO_TRANSLATE_CHANNELS.getValue() &&
++            dialogId < 0 &&
++            isFeatureAvailable(dialogId)
++        ) {
++            final TLRPC.Chat chat = getMessagesController().getChat(-dialogId);
++            if (chat != null && !chat.megagroup && !isTranslatingDialog(dialogId)) {
++                toggleTranslatingDialog(dialogId, true);
++            }
++        }
+         if (!isFeatureAvailable(dialogId)) {
+             return;
+         }
+-- 
+2.43.0
