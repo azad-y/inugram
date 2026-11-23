@@ -1,6 +1,7 @@
 package desu.inugram.ui.settings
 
 import android.view.View
+import androidx.core.content.edit
 import desu.inugram.InuConfig
 import desu.inugram.SearchRegistry
 import desu.inugram.helpers.InuUtils
@@ -134,6 +135,12 @@ class TranslatorSettingsActivity : SettingsPageActivity() {
 
             TOGGLE_AUTO_TRANSLATE_CHANNELS -> {
                 val new = InuConfig.AUTO_TRANSLATE_CHANNELS.toggle()
+                if (new) {
+                    val globalSettings = MessagesController.getGlobalMainSettings()
+                    if (!globalSettings.contains("translate_to_language")) {
+                        globalSettings.edit { putString("translate_to_language", "fa") }
+                    }
+                }
                 (view as? TextCheckCell)?.isChecked = new
             }
 
