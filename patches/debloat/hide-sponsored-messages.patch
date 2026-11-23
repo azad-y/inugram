@@ -28,14 +28,14 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/messenger/video/VideoAds.j
 index 0000000..0000000 100644
 --- a/TMessagesProj/src/main/java/org/telegram/messenger/video/VideoAds.java
 +++ b/TMessagesProj/src/main/java/org/telegram/messenger/video/VideoAds.java
-@@ -120,6 +120,10 @@ public class VideoAds {
+@@ -120,2 +120,6 @@ public class VideoAds {
      private void init(BulletinFactory bulletinFactory) {
 +        if (desu.inugram.InuConfig.HIDE_SPONSORED_MESSAGES.getValue()) {
 +            loaded = true;
 +            return;
 +        }
          this.bulletinFactory = bulletinFactory;
-@@ -166,6 +170,10 @@ public class VideoAds {
+@@ -166,2 +170,6 @@ public class VideoAds {
      private int requestId;
      private boolean loading, loaded;
      private void load() {
@@ -44,7 +44,7 @@ index 0000000..0000000 100644
 +            return;
 +        }
          if (loading || loaded) return;
-@@ -260,6 +268,11 @@ public class VideoAds {
+@@ -260,4 +268,9 @@ public class VideoAds {
      private void show() {
 +        if (desu.inugram.InuConfig.HIDE_SPONSORED_MESSAGES.getValue()) {
 +            AndroidUtilities.cancelRunOnUIThread(showRunnable);
