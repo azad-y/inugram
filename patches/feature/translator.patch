@@ -332,6 +332,15 @@ index 0000000..0000000 100644
          req.text.add(text);
          req.to_lang = normalizeLanguage(toLang);
          final long start = System.currentTimeMillis();
+@@ -958,6 +958,7 @@ public class TranslateController extends BaseController {
+         ) {
+             translatableDialogs.add(dialogId);
+             translatableDialogMessages.remove((Long) dialogId);
++            TranslateHelper.onDialogTranslatable(dialogId, currentAccount);
+             AndroidUtilities.runOnUIThread(() -> {
+                 NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.dialogIsTranslatable, dialogId);
+             }, 450);
+         }
 diff --git a/TMessagesProj/src/main/java/org/telegram/tgnet/ConnectionsManager.java b/TMessagesProj/src/main/java/org/telegram/tgnet/ConnectionsManager.java
 index 0000000..0000000 100644
 --- a/TMessagesProj/src/main/java/org/telegram/tgnet/ConnectionsManager.java
