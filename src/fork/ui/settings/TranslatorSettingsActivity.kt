@@ -10,6 +10,8 @@ import desu.inugram.helpers.InuUtils
 import desu.inugram.helpers.plugins.telegram.PluginTranslation
 // #endif
 import desu.inugram.helpers.translate.TranslationProviderHelper
+import desu.inugram.helpers.translate.ExternalTranslateHelper
+import desu.inugram.helpers.translate.TranslationSecrets
 import desu.inugram.ui.settings.TranslationTargetActivity
 import desu.inugram.ui.showInputDialog
 import org.telegram.messenger.AndroidUtilities
