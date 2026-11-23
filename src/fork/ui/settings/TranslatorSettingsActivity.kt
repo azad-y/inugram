@@ -101,7 +101,7 @@ class TranslatorSettingsActivity : SettingsPageActivity() {
         items.add(
             UItem.asCheck(
                 TOGGLE_AUTO_TRANSLATE_CHANNELS,
-                "Automatically translate channel messages",
+                LocaleController.getString(R.string.InuAutoTranslateChannels),
             ).setChecked(InuConfig.AUTO_TRANSLATE_CHANNELS.value)
         )
         items.add(
@@ -233,6 +233,7 @@ class TranslatorSettingsActivity : SettingsPageActivity() {
         private val TOGGLE_IN_PLACE_TRANSLATION = InuUtils.generateId()
         private val TOGGLE_TRANSLATE_WEB_PREVIEWS = InuUtils.generateId()
         private val TOGGLE_AUTO_TRANSLATE_CHANNELS = InuUtils.generateId()
+        private val TOGGLE_AUTO_TRANSLATE_CHANNELS = InuUtils.generateId()
         private val TOGGLE_KEEP_ORIGINAL = InuUtils.generateId()
         private val TOGGLE_AUTO_DETECT_LANG = InuUtils.generateId()
         private val TOGGLE_SHOW_TRANSLATE_BUTTON = InuUtils.generateId()
@@ -256,6 +257,7 @@ class TranslatorSettingsActivity : SettingsPageActivity() {
                 SearchRegistry.Entry("do-not-translate", R.string.DoNotTranslate, BUTTON_DO_NOT_TRANSLATE),
                 SearchRegistry.Entry("in-place-translation", R.string.InuInPlaceTranslation, TOGGLE_IN_PLACE_TRANSLATION),
                 SearchRegistry.Entry("translate-web-previews", R.string.InuTranslateWebPreviews, TOGGLE_TRANSLATE_WEB_PREVIEWS),
+                SearchRegistry.Entry("auto-translate-channels", R.string.InuAutoTranslateChannels, TOGGLE_AUTO_TRANSLATE_CHANNELS),
                 SearchRegistry.Entry("keep-original-after-translation", R.string.InuKeepOriginalAfterTranslation, TOGGLE_KEEP_ORIGINAL),
                 SearchRegistry.Entry("translate-auto-detect-lang", R.string.InuTranslateAutoDetectLang, TOGGLE_AUTO_DETECT_LANG),
             ),
