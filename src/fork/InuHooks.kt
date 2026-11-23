@@ -179,6 +179,9 @@ object InuHooks {
     @JvmStatic
     fun onFragmentResume(fragment: BaseFragment) {
         LinkedChatsHelper.onFragmentResume(fragment)
+        if (fragment is org.telegram.ui.ChatActivity) {
+            desu.inugram.helpers.translate.TranslateHelper.onChatResume(fragment)
+        }
     }
 
     @JvmStatic

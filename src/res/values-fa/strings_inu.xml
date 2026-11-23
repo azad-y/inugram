@@ -1007,7 +1007,7 @@
     <string name="InuJalaliDates">نمایش تاریخ شمسی</string>
     <string name="InuJalaliDatesInfo">بخش تاریخِ زمان‌ها را بر اساس تقویم جلالی نمایش می‌دهد؛ ساعت‌ها تغییری نمی‌کنند. تاریخ پیام‌هایی که پیش‌تر نمایش داده شده‌اند، پس از باز کردن دوبارهٔ گفتگو به‌روز می‌شود.</string>
     <string name="InuHideProxySponsorChannel">مخفی کردن کانال حامی پروکسی</string>
-    <string name="InuHideSponsoredMessages">مخفی کردن پیام‌های تبلیغاتی رسمی</string>
+    <string name="InuHideSponsoredMessages">مخفی کردن تبلیغات ربات‌ها و هنگام پخش ویدئو</string>
     <string name="InuJalaliPersianDigits">استفاده از ارقام فارسی</string>
 
     <!-- ترجمه‌های تکمیلی -->
@@ -1024,4 +1024,6 @@
     <string name="InuLinkedChatsInfo">یک گفتگو را به فهرست گفتگوهای حساب دیگری اضافه کنید و بدون جابه‌جایی بین حساب‌ها، از همان‌جا به آن دسترسی داشته باشید.</string>
     <string name="InuLinkedChatsAdd">افزودن به حساب</string>
     <string name="InuLinkedChatsRemove">حذف از این حساب</string>
+    <string name="InuAutoTranslateChannels">ترجمهٔ خودکار کانال‌ها، گروه‌ها و نظرات پست‌ها</string>
+    <string name="InuAutoTranslateChannelsInfo">وقتی زبان پیام‌های یک گفتگو غیر فارسی تشخیص داده شود، ترجمه را فقط بار اول فعال می‌کند. وضعیت ترجمه یا نمایش متن اصلی برای هر کانال، گروه و گفتگوی نظرات جداگانه ذخیره می‌شود و با لمس نوار قابل تغییر است.</string>
 </resources>
