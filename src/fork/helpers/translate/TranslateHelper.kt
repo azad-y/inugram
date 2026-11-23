@@ -38,20 +38,39 @@ import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
 
 object TranslateHelper {
-    /** Start automatic translation when a broadcast channel is opened. */
+    /** Called when Telegram has enough messages to classify a chat as translatable. */
     @JvmStatic
-    fun onChatResume(activity: ChatActivity) {
-        if (!InuConfig.AUTO_TRANSLATE_CHANNELS.value) return
-        val dialogId = activity.dialogId
-        if (dialogId >= 0) return
-        val account = activity.currentAccount
-        val chat = MessagesController.getInstance(account).getChat(-dialogId) ?: return
-        if (!chat.broadcast) return
-        val controller = MessagesController.getInstance(account).translateController
-        if (!controller.isFeatureAvailable(dialogId)) return
-        if (!controller.isTranslatingDialog(dialogId)) {
+    fun onDialogTranslatable(dialogId: Long, account: Int) {
+        if (!InuConfig.AUTO_TRANSLATE_CHANNELS.value || dialogId >= 0L) return
+
+        val messagesController = MessagesController.getInstance(account)
+        messagesController.getChat(-dialogId) ?: return
+        val controller = messagesController.translateController
+        if (!controller.isDialogTranslatable(dialogId)) return
+
+        val settings = MessagesController.getMainSettings(account)
+        val initializedKey = "inu_auto_translate_initialized_$dialogId"
+        if (settings.contains(initializedKey)) return
+
+        val globalSettings = MessagesController.getGlobalMainSettings()
+        if (!globalSettings.contains("translate_to_language")) {
+            globalSettings.edit { putString("translate_to_language", "fa") }
+        }
+
+        val sourceLanguage = controller.getDialogDetectedLanguage(dialogId) ?: return
+        settings.edit { putBoolean(initializedKey, true) }
+
+        if (!sourceLanguage.equals(controller.getDialogTranslateTo(dialogId), ignoreCase = true) &&
+            !controller.isTranslatingDialog(dialogId)
+        ) {
             controller.toggleTranslatingDialog(dialogId, true)
         }
+    }
+
+    /** Retry for chats whose language was detected before this screen resumed. */
+    @JvmStatic
+    fun onChatResume(activity: ChatActivity) {
+        onDialogTranslatable(activity.dialogId, activity.currentAccount)
     }
 
     private const val ORIGINAL_SEPARATOR = "\n\n--------\n\n"
