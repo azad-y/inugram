@@ -52,6 +52,12 @@ object TranslateHelper {
         val initializedKey = "inu_auto_translate_initialized_$dialogId"
         if (settings.contains(initializedKey)) return
 
+        // Preserve a translation choice that was already stored for this chat.
+        if (controller.hasDialogTranslationPreference(dialogId)) {
+            settings.edit { putBoolean(initializedKey, true) }
+            return
+        }
+
         val globalSettings = MessagesController.getGlobalMainSettings()
         if (!globalSettings.contains("translate_to_language")) {
             globalSettings.edit { putString("translate_to_language", "fa") }
