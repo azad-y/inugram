@@ -1,17 +1,16 @@
 package desu.inugram.helpers.translate
 
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.HttpUrl
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.Response
 import org.json.JSONArray
 import org.telegram.messenger.FileLog
 import org.telegram.tgnet.TLRPC
 import java.io.IOException
-import java.util.Collections
+import java.net.HttpURLConnection
+import java.net.URL
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.Executors
+import java.util.concurrent.Future
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -20,8 +19,8 @@ import java.util.concurrent.atomic.AtomicInteger
  * or a plugin/provider configuration.
  */
 internal object GoogleTranslateHelper {
-    private val client = OkHttpClient()
-    private val calls = ConcurrentHashMap<Long, MutableList<Call>>()
+    private val executor = Executors.newFixedThreadPool(4)
+    private val calls = ConcurrentHashMap<Long, MutableList<Future<*>>>()
 
     fun translate(
         account: Int,
@@ -37,81 +36,84 @@ internal object GoogleTranslateHelper {
         }
 
         val key = (account.toLong() shl 32) or (token.toLong() and 0xffffffffL)
-        val pendingCalls = Collections.synchronizedList(mutableListOf<Call>())
-        calls[key] = pendingCalls
+        val pending = java.util.Collections.synchronizedList(mutableListOf<Future<*>>())
+        calls[key] = pending
         val results = arrayOfNulls<TLRPC.TL_textWithEntities>(texts.size)
         val remaining = AtomicInteger(texts.size)
         val finished = AtomicBoolean(false)
 
         fun finishFailure(error: Throwable) {
             if (!finished.compareAndSet(false, true)) return
-            calls.remove(key, pendingCalls)
-            synchronized(pendingCalls) { pendingCalls.forEach { it.cancel() } }
+            calls.remove(key, pending)
+            synchronized(pending) { pending.forEach { it.cancel(true) } }
             FileLog.e("Built-in Google translation failed", error)
             callback(null)
         }
 
         texts.forEachIndexed { index, source ->
-            val url = HttpUrl.Builder()
-                .scheme("https")
-                .host("translate.googleapis.com")
-                .addPathSegments("translate_a/single")
-                .addQueryParameter("client", "gtx")
-                .addQueryParameter("sl", sourceLanguages.getOrNull(index)?.takeIf { it.isNotBlank() && it != "und" } ?: "auto")
-                .addQueryParameter("tl", targetLanguage)
-                .addQueryParameter("dt", "t")
-                .addQueryParameter("q", source.text.toString())
-                .build()
-            val request = Request.Builder()
-                .url(url)
-                .header("Accept", "application/json")
-                .header("User-Agent", "Mozilla/5.0")
-                .build()
-            val call = client.newCall(request)
-            pendingCalls.add(call)
-            call.enqueue(object : Callback {
-                override fun onFailure(call: Call, e: IOException) {
-                    finishFailure(e)
-                }
-
-                override fun onResponse(call: Call, response: Response) {
-                    try {
-                        val body = response.body?.string().orEmpty()
-                        if (!response.isSuccessful) {
-                            throw IOException("Google Translate HTTP ${response.code}: ${body.take(300)}")
-                        }
-                        val root = JSONArray(body)
-                        val segments = root.optJSONArray(0) ?: throw IOException("Google Translate response has no segments")
-                        val translated = StringBuilder()
-                        for (i in 0 until segments.length()) {
-                            val segment = segments.optJSONArray(i) ?: continue
-                            val part = segment.optString(0)
-                            if (part != "null") translated.append(part)
-                        }
-                        if (translated.isEmpty()) throw IOException("Google Translate returned an empty result")
-                        results[index] = TLRPC.TL_textWithEntities().apply {
-                            text = translated.toString()
-                            // Entity offsets refer to the source text and are not valid after translation.
-                            entities = ArrayList()
-                        }
-                        if (remaining.decrementAndGet() == 0 && finished.compareAndSet(false, true)) {
-                            calls.remove(key, pendingCalls)
-                            callback(results.map { it ?: TLRPC.TL_textWithEntities() })
-                        }
-                    } catch (e: Exception) {
-                        finishFailure(e)
-                    } finally {
-                        response.close()
+            val future = executor.submit {
+                var connection: HttpURLConnection? = null
+                try {
+                    val sourceLanguage = sourceLanguages.getOrNull(index)
+                        ?.takeIf { it.isNotBlank() && it != "und" } ?: "auto"
+                    val query = listOf(
+                        "client" to "gtx",
+                        "sl" to sourceLanguage,
+                        "tl" to targetLanguage,
+                        "dt" to "t",
+                        "q" to source.text.toString(),
+                    ).joinToString("&") { (name, value) ->
+                        "$name=${URLEncoder.encode(value, StandardCharsets.UTF_8.name())}"
                     }
+                    connection = (URL("https://translate.googleapis.com/translate_a/single?$query")
+                        .openConnection() as HttpURLConnection).apply {
+                        requestMethod = "GET"
+                        connectTimeout = 15000
+                        readTimeout = 20000
+                        setRequestProperty("Accept", "application/json")
+                        setRequestProperty("User-Agent", "Mozilla/5.0")
+                    }
+                    val status = connection.responseCode
+                    val body = (if (status in 200..299) connection.inputStream else connection.errorStream)
+                        ?.bufferedReader(StandardCharsets.UTF_8)?.use { it.readText() }.orEmpty()
+                    if (status !in 200..299) {
+                        throw IOException("Google Translate HTTP $status: ${body.take(300)}")
+                    }
+
+                    val segments = JSONArray(body).optJSONArray(0)
+                        ?: throw IOException("Google Translate response has no segments")
+                    val translated = StringBuilder()
+                    for (i in 0 until segments.length()) {
+                        val segment = segments.optJSONArray(i) ?: continue
+                        val part = segment.optString(0)
+                        if (part != "null") translated.append(part)
+                    }
+                    if (translated.isEmpty()) throw IOException("Google Translate returned an empty result")
+
+                    results[index] = TLRPC.TL_textWithEntities().apply {
+                        text = translated.toString()
+                        // Source entity offsets are invalid after translation.
+                        entities = ArrayList()
+                    }
+                    if (remaining.decrementAndGet() == 0 && finished.compareAndSet(false, true)) {
+                        calls.remove(key, pending)
+                        callback(results.map { it ?: TLRPC.TL_textWithEntities() })
+                    }
+                } catch (error: Exception) {
+                    finishFailure(error)
+                } finally {
+                    connection?.disconnect()
                 }
-            })
+            }
+            pending.add(future)
+            if (finished.get()) future.cancel(true)
         }
     }
 
     fun cancel(account: Int, token: Int): Boolean {
         val key = (account.toLong() shl 32) or (token.toLong() and 0xffffffffL)
         val pending = calls.remove(key) ?: return false
-        synchronized(pending) { pending.forEach { it.cancel() } }
+        synchronized(pending) { pending.forEach { it.cancel(true) } }
         return true
     }
 }
