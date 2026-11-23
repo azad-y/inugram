@@ -1058,6 +1058,7 @@
     <string name="InuJalaliDatesInfo">Shows the date part of timestamps in the Jalali calendar. Times stay the same. Already shown messages update after reopening the chat.</string>
     <string name="InuJalaliPersianDigits">Persian digits in Jalali dates</string>
     <string name="InuHideProxySponsorChannel">Hide proxy sponsor channel</string>
-    <string name="InuHideSponsoredMessages">Hide sponsored messages</string>
+    <string name="InuHideSponsoredMessages">Hide sponsored messages in bots and video playback</string>
     <string name="InuAutoTranslateChannels">Automatically translate channel messages</string>
+    <string name="InuAutoTranslateChannelsInfo">Automatically translates broadcast channels using the selected translation provider and target language.</string>
 </resources>
