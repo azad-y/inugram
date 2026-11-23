@@ -1024,6 +1024,6 @@
     <string name="InuLinkedChatsInfo">یک گفتگو را به فهرست گفتگوهای حساب دیگری اضافه کنید و بدون جابه‌جایی بین حساب‌ها، از همان‌جا به آن دسترسی داشته باشید.</string>
     <string name="InuLinkedChatsAdd">افزودن به حساب</string>
     <string name="InuLinkedChatsRemove">حذف از این حساب</string>
-    <string name="InuAutoTranslateChannels">ترجمهٔ خودکار پیام‌های کانال‌ها</string>
-    <string name="InuAutoTranslateChannelsInfo">پیام‌های کانال‌های پخشی را با سرویس ترجمه و زبان مقصد انتخاب‌شده به‌طور خودکار ترجمه می‌کند.</string>
+    <string name="InuAutoTranslateChannels">ترجمهٔ خودکار کانال‌ها، گروه‌ها و نظرات پست‌ها</string>
+    <string name="InuAutoTranslateChannelsInfo">وقتی زبان پیام‌های یک گفتگو غیر فارسی تشخیص داده شود، ترجمه را فقط بار اول فعال می‌کند. وضعیت ترجمه یا نمایش متن اصلی برای هر کانال، گروه و گفتگوی نظرات جداگانه ذخیره می‌شود و با لمس نوار قابل تغییر است.</string>
 </resources>
