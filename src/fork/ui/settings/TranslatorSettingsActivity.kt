@@ -1,6 +1,8 @@
 package desu.inugram.ui.settings
 
 import android.view.View
+import android.content.Intent
+import android.net.Uri
 import android.text.InputType
 import androidx.core.content.edit
 import desu.inugram.InuConfig
@@ -42,19 +44,25 @@ class TranslatorSettingsActivity : SettingsPageActivity() {
         items.add(
             UItem.asButton(
                 BUTTON_PROVIDER,
-                "Translation provider",
+                "مترجم پیش‌فرض",
                 providerLabel(),
             )
         )
-        items.add(UItem.asButton(BUTTON_MICROSOFT_KEY, "Microsoft Translator API key",
-            if (TranslationSecrets.get("microsoft_key").isBlank()) "Not configured" else "Configured"))
-        items.add(UItem.asButton(BUTTON_MICROSOFT_REGION, "Microsoft Translator region",
-            TranslationSecrets.get("microsoft_region").ifBlank { "Optional for global resources" }))
-        items.add(UItem.asButton(BUTTON_OPENAI_KEY, "OpenAI API key",
-            if (TranslationSecrets.get("openai_key").isBlank()) "Not configured" else "Configured"))
-        items.add(UItem.asButton(BUTTON_OPENAI_MODEL, "OpenAI model",
+        items.add(UItem.asShadow("گوگل: رایگان و بدون نیاز به کلید API. برای استفاده، «Google Translate» را به‌عنوان مترجم انتخاب کن."))
+        items.add(UItem.asButton(BUTTON_GOOGLE_GUIDE, "راهنمای Google Translate", "مشاهده توضیحات"))
+        items.add(UItem.asButton(BUTTON_MICROSOFT_KEY, "کلید API مترجم مایکروسافت",
+            if (TranslationSecrets.get("microsoft_key").isBlank()) "تنظیم نشده" else "ثبت شده"))
+        items.add(UItem.asButton(BUTTON_MICROSOFT_REGION, "ناحیه (Region) مایکروسافت",
+            TranslationSecrets.get("microsoft_region").ifBlank { "برای برخی منابع لازم است" }))
+        items.add(UItem.asShadow("برای دریافت کلید: وارد Azure Portal شو، یک منبع Translator بساز و از بخش Keys and Endpoint کلید را کپی کن. اگر هنگام ساخت منبع Region نمایش داده شد، همان مقدار را اینجا وارد کن."))
+        items.add(UItem.asButton(BUTTON_MICROSOFT_GUIDE, "راهنمای دریافت کلید Microsoft", "بازکردن راهنمای رسمی"))
+        items.add(UItem.asButton(BUTTON_OPENAI_KEY, "کلید API چت‌جی‌پی‌تی (OpenAI)",
+            if (TranslationSecrets.get("openai_key").isBlank()) "تنظیم نشده" else "ثبت شده"))
+        items.add(UItem.asButton(BUTTON_OPENAI_MODEL, "مدل OpenAI",
             TranslationSecrets.get("openai_model").ifBlank { "gpt-4.1-mini" }))
-        items.add(UItem.asShadow("Microsoft and OpenAI receive message text when selected. API usage may be billed by the provider. Keys are encrypted on this device and are not included in settings export."))
+        items.add(UItem.asShadow("برای دریافت کلید: وارد حساب OpenAI شو، در صفحه API Keys گزینه ساخت کلید جدید را بزن و کلید را کپی کن. برای استفاده از API باید پرداخت و اعتبار API جداگانه تنظیم شده باشد؛ اشتراک ChatGPT کافی نیست."))
+        items.add(UItem.asButton(BUTTON_OPENAI_GUIDE, "راهنمای دریافت کلید OpenAI", "بازکردن صفحه ساخت کلید"))
+        items.add(UItem.asShadow("توجه: با انتخاب مایکروسافت یا OpenAI، متن پیام برای ترجمه به همان سرویس ارسال می‌شود و ممکن است هزینه API داشته باشد. کلیدها روی این دستگاه رمزگذاری می‌شوند و در خروجی تنظیمات قرار نمی‌گیرند."))
         items.add(
             UItem.asCheck(
                 TOGGLE_SHOW_TRANSLATE_BUTTON,
@@ -186,6 +194,9 @@ class TranslatorSettingsActivity : SettingsPageActivity() {
             BUTTON_DO_NOT_TRANSLATE -> presentFragment(RestrictedLanguagesSelectActivity())
 
             BUTTON_PROVIDER -> showProviderDialog()
+            BUTTON_GOOGLE_GUIDE -> openHelp("https://translate.google.com/")
+            BUTTON_MICROSOFT_GUIDE -> openHelp("https://learn.microsoft.com/azure/ai-services/translator/create-translator-resource")
+            BUTTON_OPENAI_GUIDE -> openHelp("https://platform.openai.com/api-keys")
             BUTTON_MICROSOFT_KEY -> editSecret("Microsoft Translator API key", "microsoft_key", true)
             BUTTON_MICROSOFT_REGION -> editSecret("Microsoft Translator region", "microsoft_region", false)
             BUTTON_OPENAI_KEY -> editSecret("OpenAI API key", "openai_key", true)
@@ -199,7 +210,7 @@ class TranslatorSettingsActivity : SettingsPageActivity() {
         val providers = mutableListOf(
             RadioDialogBuilder.Item("Google Translate"),
             RadioDialogBuilder.Item("Microsoft Translator"),
-            RadioDialogBuilder.Item("ChatGPT (OpenAI)"),
+            RadioDialogBuilder.Item("چت‌جی‌پی‌تی (OpenAI)"),
         )
         // #if PLUGINS
         PluginTranslation.providers.forEach {
@@ -221,7 +232,7 @@ class TranslatorSettingsActivity : SettingsPageActivity() {
             }
         }
         val dialog = RadioDialogBuilder(context, resourceProvider)
-            .setTitle("Translation provider")
+            .setTitle("انتخاب مترجم")
             .setItems(providers, selectedIndex) { _, index ->
                 InuConfig.TRANSLATION_PROVIDER.value = when (index) {
                     0 -> ""
@@ -246,7 +257,7 @@ class TranslatorSettingsActivity : SettingsPageActivity() {
     private fun providerLabel(): String = when (InuConfig.TRANSLATION_PROVIDER.value) {
         "" -> "Google Translate"
         ExternalTranslateHelper.MICROSOFT -> "Microsoft Translator"
-        ExternalTranslateHelper.OPENAI -> "ChatGPT (OpenAI)"
+        ExternalTranslateHelper.OPENAI -> "چت‌جی‌پی‌تی (OpenAI)"
         else -> {
             // #if PLUGINS
             PluginTranslation.findProvider(InuConfig.TRANSLATION_PROVIDER.value)?.name
@@ -254,6 +265,14 @@ class TranslatorSettingsActivity : SettingsPageActivity() {
             // #else
             LocaleController.getString(R.string.InuTranslationProviderUnavailable)
             // #endif
+        }
+    }
+
+    private fun openHelp(url: String) {
+        try {
+            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+        } catch (error: Exception) {
+            org.telegram.messenger.FileLog.e("Unable to open translation provider help", error)
         }
     }
 
@@ -300,6 +319,9 @@ class TranslatorSettingsActivity : SettingsPageActivity() {
         private val BUTTON_DO_NOT_TRANSLATE = InuUtils.generateId()
         private val BUTTON_TARGET_LANG = InuUtils.generateId()
         private val BUTTON_PROVIDER = InuUtils.generateId()
+        private val BUTTON_GOOGLE_GUIDE = InuUtils.generateId()
+        private val BUTTON_MICROSOFT_GUIDE = InuUtils.generateId()
+        private val BUTTON_OPENAI_GUIDE = InuUtils.generateId()
         private val BUTTON_MICROSOFT_KEY = InuUtils.generateId()
         private val BUTTON_MICROSOFT_REGION = InuUtils.generateId()
         private val BUTTON_OPENAI_KEY = InuUtils.generateId()
