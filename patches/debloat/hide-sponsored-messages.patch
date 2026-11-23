@@ -35,7 +35,7 @@ index 0000000..0000000 100644
 +            return;
 +        }
          this.bulletinFactory = bulletinFactory;
-@@ -166,2 +170,6 @@ public class VideoAds {
+@@ -166,4 +170,8 @@ public class VideoAds {
      private int requestId;
      private boolean loading, loaded;
      private void load() {
