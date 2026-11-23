@@ -44,7 +44,7 @@ index 0000000..0000000 100644
 +            return;
 +        }
          if (loading || loaded) return;
-@@ -260,4 +268,10 @@ public class VideoAds {
+@@ -260,2 +268,8 @@ public class VideoAds {
      private void show() {
 +        if (desu.inugram.InuConfig.HIDE_SPONSORED_MESSAGES.getValue()) {
 +            AndroidUtilities.cancelRunOnUIThread(showRunnable);
@@ -53,8 +53,6 @@ index 0000000..0000000 100644
 +            return;
 +        }
          if (ads.isEmpty()) return;
- 
-         if (UserConfig.getInstance(currentAccount).isPremium() && MessagesController.getInstance(currentAccount).isSponsoredDisabled()) {
 
 -- 
 2.43.0
