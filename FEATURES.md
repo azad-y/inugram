@@ -266,6 +266,7 @@ most things are toggleable in `Settings → Inugram`, with sensible opinionated 
 - hide trending stickers/emoji in egs
 - 🐶 hide ai features
 - hide stories
+- hide sponsored bot and video ads
 - hide voice hint
 - hide paid reaction upsell
 - hide hashtag suggestions in chat input
@@ -283,6 +284,8 @@ most things are toggleable in `Settings → Inugram`, with sensible opinionated 
 - disable quick share (long-tap share button → send to frequent contact without confirmation)
 - disable auto-play when opening the pinned music player on a profile
 
+
+- automatically translate broadcast-channel messages using the configured translation provider and target language
 
 ## 🐶 bugfixes (vs stock)
 
