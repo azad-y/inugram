@@ -1001,7 +1001,7 @@ object InuConfig {
     val KEEP_ORIGINAL_AFTER_TRANSLATION = BoolItem("keep_original_after_translation", false)
 
     @JvmField
-    val AUTO_TRANSLATE_CHANNELS = BoolItem("auto_translate_channels", false)
+    val AUTO_TRANSLATE_CHANNELS = BoolItem("auto_translate_channels", true)
 
     @JvmField
     val TRANSLATE_AUTO_DETECT_LANG = BoolItem("translate_auto_detect_lang", true)
