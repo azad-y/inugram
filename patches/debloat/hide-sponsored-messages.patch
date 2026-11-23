@@ -1,0 +1,43 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Inugram contributors <dev@inugram>
+Date: Mon, 23 Nov 2026 00:00:00 +0000
+Subject: [PATCH] add a preference to hide sponsored bot and video ads
+
+---
+ .../org/telegram/messenger/video/VideoAds.java |  4 ++++
+ .../org/telegram/ui/bots/BotAdView.java        |  5 +++++
+ 2 files changed, 9 insertions(+)
+
+diff --git a/TMessagesProj/src/main/java/org/telegram/ui/bots/BotAdView.java b/TMessagesProj/src/main/java/org/telegram/ui/bots/BotAdView.java
+index 0000000..0000000 100644
+--- a/TMessagesProj/src/main/java/org/telegram/ui/bots/BotAdView.java
++++ b/TMessagesProj/src/main/java/org/telegram/ui/bots/BotAdView.java
+@@ -125,6 +125,11 @@ public class BotAdView extends FrameLayout {
+     }
+ 
+     public void set(ChatActivity chatActivity, MessageObject messageObject, Runnable onRemoveListener, Runnable onCloseListener) {
++        if (desu.inugram.InuConfig.HIDE_SPONSORED_MESSAGES.getValue()) {
++            setVisibility(View.GONE);
++            return;
++        }
++        setVisibility(View.VISIBLE);
+         if (messageObject == null) return;
+ 
+         CharSequence channel = messageObject.sponsoredTitle;
+diff --git a/TMessagesProj/src/main/java/org/telegram/messenger/video/VideoAds.java b/TMessagesProj/src/main/java/org/telegram/messenger/video/VideoAds.java
+index 0000000..0000000 100644
+--- a/TMessagesProj/src/main/java/org/telegram/messenger/video/VideoAds.java
++++ b/TMessagesProj/src/main/java/org/telegram/messenger/video/VideoAds.java
+@@ -166,6 +166,10 @@ public class VideoAds {
+     private int requestId;
+     private boolean loading, loaded;
+     private void load() {
++        if (desu.inugram.InuConfig.HIDE_SPONSORED_MESSAGES.getValue()) {
++            loaded = true;
++            return;
++        }
+         if (loading || loaded) return;
+ 
+         if (UserConfig.getInstance(currentAccount).isPremium() && MessagesController.getInstance(currentAccount).isSponsoredDisabled()) {
+-- 
+2.43.0
