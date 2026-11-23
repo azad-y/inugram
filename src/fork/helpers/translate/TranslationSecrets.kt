@@ -15,14 +15,16 @@ internal object TranslationSecrets {
     private const val PREFS = "translation_secrets"
     private const val KEY_ALIAS = "inugram_translation_secrets_v1"
 
-    fun get(name: String): String = try {
-        val packed = ApplicationLoader.applicationContext.getSharedPreferences(PREFS, 0).getString(name, null) ?: return ""
-        val parts = packed.split(":")
-        if (parts.size != 2) return ""
-        val cipher = Cipher.getInstance("AES/GCM/NoPadding")
-        cipher.init(Cipher.DECRYPT_MODE, secretKey(), GCMParameterSpec(128, Base64.decode(parts[0], Base64.NO_WRAP)))
-        String(cipher.doFinal(Base64.decode(parts[1], Base64.NO_WRAP)), Charsets.UTF_8)
-    } catch (_: Exception) { "" }
+    fun get(name: String): String {
+        return try {
+            val packed = ApplicationLoader.applicationContext.getSharedPreferences(PREFS, 0).getString(name, null) ?: return ""
+            val parts = packed.split(":")
+            if (parts.size != 2) return ""
+            val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+            cipher.init(Cipher.DECRYPT_MODE, secretKey(), GCMParameterSpec(128, Base64.decode(parts[0], Base64.NO_WRAP)))
+            String(cipher.doFinal(Base64.decode(parts[1], Base64.NO_WRAP)), Charsets.UTF_8)
+        } catch (_: Exception) { "" }
+    }
 
     fun set(name: String, value: String) {
         val prefs = ApplicationLoader.applicationContext.getSharedPreferences(PREFS, 0)
