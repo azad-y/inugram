@@ -4,9 +4,9 @@ Date: Wed, 25 Nov 2026 00:00:00 +0000
 Subject: hide message, channel, reply and story reactions
 
 ---
- .../Reactions/ReactionsLayoutInBubble.java    | 33 +++++++++++++++++++++++++++++++++
+ .../Reactions/ReactionsLayoutInBubble.java    | 34 ++++++++++++++++++++++++++++++++++
  .../telegram/ui/Stories/PeerStoriesView.java  | 25 +++++++++++++++++++++++--
- 2 files changed, 56 insertions(+), 2 deletions(-)
+ 2 files changed, 59 insertions(+), 2 deletions(-)
 
 diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Components/Reactions/ReactionsLayoutInBubble.java b/TMessagesProj/src/main/java/org/telegram/ui/Components/Reactions/ReactionsLayoutInBubble.java
 index 0000000..0000000 100644
@@ -33,7 +33,7 @@ index 0000000..0000000 100644
 +                return;
 +            }
 
-@@ -337,1 +349,21 @@ public class ReactionsLayoutInBubble {
+@@ -337,1 +349,23 @@ public class ReactionsLayoutInBubble {
      private final ArrayList<Integer> reactionLineWidths = new ArrayList<>();
 +    private boolean shouldHideMessageReactions(MessageObject messageObject) {
 +        if (messageObject == null || messageObject.messageOwner == null) {
