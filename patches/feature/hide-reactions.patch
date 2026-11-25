@@ -107,3 +107,38 @@ index 0000000..0000000 100644
 +            return;
 +        }
          if (likesReactionLayout == null) {
+
+diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Components/ReactionsContainerLayout.java b/TMessagesProj/src/main/java/org/telegram/ui/Components/ReactionsContainerLayout.java
+index 0000000..0000000 100644
+--- a/TMessagesProj/src/main/java/org/telegram/ui/Components/ReactionsContainerLayout.java
++++ b/TMessagesProj/src/main/java/org/telegram/ui/Components/ReactionsContainerLayout.java
+@@ -1144,2 +1144,8 @@
+     public void setMessage(MessageObject message, TLRPC.ChatFull chatFull, boolean animated) {
+         this.messageObject = message;
++        setVisibility(View.VISIBLE);
++        if (type == TYPE_DEFAULT && shouldHideQuickReactionPicker(message)) {
++            setVisibility(View.GONE);
++            return;
++        }
+         int chosenCount = 0;
+@@ -1138,0 +1144,19 @@
++    private boolean shouldHideQuickReactionPicker(MessageObject message) {
++        if (message == null || message.messageOwner == null) {
++            return false;
++        }
++        if (message.messageOwner.reply_to != null
++                && (message.messageOwner.reply_to.reply_to_msg_id != 0
++                || message.messageOwner.reply_to.reply_to_top_id != 0
++                || message.messageOwner.reply_to.reply_to_random_id != 0)) {
++            return desu.inugram.InuConfig.HIDE_REACTIONS_COMMENTS.getValue();
++        }
++        long dialogId = message.getDialogId();
++        if (dialogId > 0) {
++            return desu.inugram.InuConfig.HIDE_REACTIONS_MESSAGES.getValue();
++        }
++        TLRPC.Chat chat = MessagesController.getInstance(currentAccount).getChat(-dialogId);
++        if (ChatObject.isChannelAndNotMegaGroup(chat)) {
++            return desu.inugram.InuConfig.HIDE_REACTIONS_CHANNEL_POSTS.getValue();
++        }
++        return desu.inugram.InuConfig.HIDE_REACTIONS_MESSAGES.getValue();
++    }
