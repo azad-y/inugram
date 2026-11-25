@@ -91,6 +91,12 @@ class AnnoyancesSettingsActivity : SettingsPageActivity() {
         )
         items.add(
             UItem.asCheck(
+                TOGGLE_HIDE_QUICK_REACTION_PICKER,
+                LocaleController.getString(R.string.InuHideQuickReactionPicker),
+            ).setChecked(InuConfig.HIDE_QUICK_REACTION_PICKER.value)
+        )
+        items.add(
+            UItem.asCheck(
                 TOGGLE_HIDE_REPOST_TO_STORY,
                 LocaleController.getString(R.string.InuHideRepostToStory),
             ).setChecked(InuConfig.HIDE_REPOST_TO_STORY.value)
@@ -232,6 +238,12 @@ class AnnoyancesSettingsActivity : SettingsPageActivity() {
                 val new = InuConfig.HIDE_REACTIONS_STORIES.toggle()
                 (view as? TextCheckCell)?.isChecked = new
                 postNotificationForAllAccounts(NotificationCenter.storiesUpdated)
+                softRebuild()
+            }
+
+            TOGGLE_HIDE_QUICK_REACTION_PICKER -> {
+                val new = InuConfig.HIDE_QUICK_REACTION_PICKER.toggle()
+                (view as? TextCheckCell)?.isChecked = new
                 softRebuild()
             }
 
@@ -387,6 +399,7 @@ class AnnoyancesSettingsActivity : SettingsPageActivity() {
         private val TOGGLE_HIDE_REACTIONS_CHANNEL_POSTS = InuUtils.generateId()
         private val TOGGLE_HIDE_REACTIONS_COMMENTS = InuUtils.generateId()
         private val TOGGLE_HIDE_REACTIONS_STORIES = InuUtils.generateId()
+        private val TOGGLE_HIDE_QUICK_REACTION_PICKER = InuUtils.generateId()
         private val TOGGLE_HIDE_TRENDING_STICKERS = InuUtils.generateId()
         private val TOGGLE_HIDE_REPOST_TO_STORY = InuUtils.generateId()
         private val TOGGLE_DISABLE_SENSITIVE = InuUtils.generateId()
@@ -417,6 +430,7 @@ class AnnoyancesSettingsActivity : SettingsPageActivity() {
                 SearchRegistry.Entry("hide-channel-post-reactions", R.string.InuHideChannelPostReactions, TOGGLE_HIDE_REACTIONS_CHANNEL_POSTS),
                 SearchRegistry.Entry("hide-comment-reactions", R.string.InuHideCommentReactions, TOGGLE_HIDE_REACTIONS_COMMENTS),
                 SearchRegistry.Entry("hide-story-reactions", R.string.InuHideStoryReactions, TOGGLE_HIDE_REACTIONS_STORIES),
+                SearchRegistry.Entry("hide-quick-reaction-picker", R.string.InuHideQuickReactionPicker, TOGGLE_HIDE_QUICK_REACTION_PICKER),
                 SearchRegistry.Entry("hide-repost-to-story", R.string.InuHideRepostToStory, TOGGLE_HIDE_REPOST_TO_STORY),
                 SearchRegistry.Entry("hide-trending-stickers", R.string.InuHideTrendingStickers, TOGGLE_HIDE_TRENDING_STICKERS),
                 SearchRegistry.Entry("disable-sensitive", R.string.InuDisableSensitive, TOGGLE_DISABLE_SENSITIVE),
