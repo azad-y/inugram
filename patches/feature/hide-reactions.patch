@@ -112,27 +112,12 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Components/ReactionsCon
 index 0000000..0000000 100644
 --- a/TMessagesProj/src/main/java/org/telegram/ui/Components/ReactionsContainerLayout.java
 +++ b/TMessagesProj/src/main/java/org/telegram/ui/Components/ReactionsContainerLayout.java
-@@ -1144,2 +1144,22 @@
+@@ -1144,2 +1144,7 @@
      public void setMessage(MessageObject message, TLRPC.ChatFull chatFull, boolean animated) {
          this.messageObject = message;
 +        setVisibility(View.VISIBLE);
-+        if (type == TYPE_DEFAULT && message != null && message.messageOwner != null) {
-+            boolean hideQuickReactions;
-+            if (message.messageOwner.reply_to != null
-+                    && (message.messageOwner.reply_to.reply_to_msg_id != 0
-+                    || message.messageOwner.reply_to.reply_to_top_id != 0
-+                    || message.messageOwner.reply_to.reply_to_random_id != 0)) {
-+                hideQuickReactions = desu.inugram.InuConfig.HIDE_REACTIONS_COMMENTS.getValue();
-+            } else if (message.getDialogId() > 0) {
-+                hideQuickReactions = desu.inugram.InuConfig.HIDE_REACTIONS_MESSAGES.getValue();
-+            } else if (ChatObject.isChannelAndNotMegaGroup(MessagesController.getInstance(currentAccount).getChat(-message.getDialogId()))) {
-+                hideQuickReactions = desu.inugram.InuConfig.HIDE_REACTIONS_CHANNEL_POSTS.getValue();
-+            } else {
-+                hideQuickReactions = desu.inugram.InuConfig.HIDE_REACTIONS_MESSAGES.getValue();
-+            }
-+            if (hideQuickReactions) {
-+                setVisibility(View.GONE);
-+                return;
-+            }
++        if (type == TYPE_DEFAULT && desu.inugram.InuConfig.HIDE_QUICK_REACTION_PICKER.getValue()) {
++            setVisibility(View.GONE);
++            return;
 +        }
          int chosenCount = 0;
