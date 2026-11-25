@@ -28,8 +28,8 @@ index 0000000..0000000 100644
 +                return;
 +            }
              boolean forceLikeDislikeReactions = false; /*!messageObject.isOutOwner()
-@@ -348,1 +360,22 @@
-     public void measure(int availableWidth, int gravity) {
+@@ -348,1 +348,22 @@
+     private final ArrayList<Integer> reactionLineWidths = new ArrayList<>();
 +    private boolean shouldHideMessageReactions(MessageObject messageObject) {
 +        if (messageObject == null || messageObject.messageOwner == null) {
 +            return false;
