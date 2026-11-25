@@ -45,7 +45,6 @@ env:
 
 jobs:
   build:
-    environment: signing
     runs-on: ubuntu-latest
     timeout-minutes: 180
     strategy:
@@ -199,34 +198,6 @@ jobs:
       - name: test (InuCore + plugin bridge)
         working-directory: ${{ matrix.worktree }}
         run: ./gradlew --no-daemon :InuCore:check
-
-      - name: configure release signing
-        working-directory: ${{ matrix.worktree }}
-        env:
-          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
-          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: |
-          set -euo pipefail
-          test -n "$KEYSTORE_BASE64" || { echo "::error::KEYSTORE_BASE64 is missing from the signing environment"; exit 1; }
-          test -n "$KEYSTORE_PASSWORD" || { echo "::error::KEYSTORE_PASSWORD is missing from the signing environment"; exit 1; }
-          test -n "$KEY_PASSWORD" || { echo "::error::KEY_PASSWORD is missing from the signing environment"; exit 1; }
-
-          mkdir -p TMessagesProj/config
-          printf '%s' "$KEYSTORE_BASE64" | base64 --decode > TMessagesProj/config/release.keystore
-          chmod 600 TMessagesProj/config/release.keystore
-
-          mapfile -t aliases < <(keytool -list -v -keystore TMessagesProj/config/release.keystore -storepass "$KEYSTORE_PASSWORD" 2>/dev/null | sed -n 's/^Alias name: //p')
-          if [ "${#aliases[@]}" -ne 1 ]; then
-            echo "::error::Expected exactly one key alias in the provided keystore; found ${#aliases[@]}."
-            exit 1
-          fi
-
-          {
-            printf '\nRELEASE_STORE_PASSWORD=%s\n' "$KEYSTORE_PASSWORD"
-            printf 'RELEASE_KEY_PASSWORD=%s\n' "$KEY_PASSWORD"
-            printf 'RELEASE_KEY_ALIAS=%s\n' "${aliases[0]}"
-          } >> gradle.properties
 
       - name: reset ccache stats
         run: ccache -z
