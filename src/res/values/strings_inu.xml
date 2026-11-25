@@ -192,6 +192,7 @@
     <string name="InuHideChannelPostReactions">Hide reactions on channel posts</string>
     <string name="InuHideCommentReactions">Hide reactions in comments and replies</string>
     <string name="InuHideStoryReactions">Hide story reactions</string>
+    <string name="InuHideQuickReactionPicker">Hide quick reaction picker</string>
     <string name="InuHideHashtagSuggestions">Hide hashtag suggestions</string>
     <string name="InuHideRichEditorButton">Hide rich text editor button</string>
     <string name="InuDisableProfileScrollSnap">Disable profile scroll snap</string>
