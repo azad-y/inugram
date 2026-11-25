@@ -12,26 +12,22 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Components/Reactions/Re
 index 0000000..0000000 100644
 --- a/TMessagesProj/src/main/java/org/telegram/ui/Components/Reactions/ReactionsLayoutInBubble.java
 +++ b/TMessagesProj/src/main/java/org/telegram/ui/Components/Reactions/ReactionsLayoutInBubble.java
-@@ -174,3 +174,15 @@ public class ReactionsLayoutInBubble {
-         hasUnreadReactions = false;
-         hasPaidReaction = false;
-         reactionButtons.clear();
-+        if (shouldHideMessageReactions(messageObject)) {
-+            for (int i = 0; i < oldButtons.size(); i++) {
-+                oldButtons.get(i).detach();
+@@ -177,1 +177,13 @@ public class ReactionsLayoutInBubble {
+         if (messageObject != null) {
++            if (shouldHideMessageReactions(messageObject)) {
++                for (int i = 0; i < oldButtons.size(); i++) {
++                    oldButtons.get(i).detach();
++                }
++                resetAnimation();
++                lastDrawingReactionButtons.clear();
++                lastDrawingReactionButtonsTmp.clear();
++                wasDrawn = false;
++                isEmpty = true;
++                width = height = totalHeight = 0;
++                return;
 +            }
-+            resetAnimation();
-+            lastDrawingReactionButtons.clear();
-+            lastDrawingReactionButtonsTmp.clear();
-+            wasDrawn = false;
-+            isEmpty = true;
-+            width = height = totalHeight = 0;
-+            return;
-+        }
-@@ -356,6 +368,27 @@ public class ReactionsLayoutInBubble {
-         isEmpty = reactionButtons.isEmpty();
-     }
- 
+@@ -377,1 +389,22 @@ public class ReactionsLayoutInBubble {
+     public void measure(int availableWidth, int gravity) {
 +    private boolean shouldHideMessageReactions(MessageObject messageObject) {
 +        if (messageObject == null || messageObject.messageOwner == null) {
 +            return false;
@@ -53,9 +49,7 @@ index 0000000..0000000 100644
 +        return desu.inugram.InuConfig.HIDE_REACTIONS_MESSAGES.getValue();
 +    }
 +
-     private final ArrayList<Integer> reactionLineWidths = new ArrayList<>();
-     public void measure(int availableWidth, int gravity) {
-         height = 0;
+     }
 diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Stories/PeerStoriesView.java b/TMessagesProj/src/main/java/org/telegram/ui/Stories/PeerStoriesView.java
 index 0000000..0000000 100644
 --- a/TMessagesProj/src/main/java/org/telegram/ui/Stories/PeerStoriesView.java
