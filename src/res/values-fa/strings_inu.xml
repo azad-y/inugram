@@ -192,6 +192,7 @@
     <string name="InuHideChannelPostReactions">پنهان کردن واکنش‌های پست‌های کانال</string>
     <string name="InuHideCommentReactions">پنهان کردن واکنش‌های کامنت‌ها و پاسخ‌ها</string>
     <string name="InuHideStoryReactions">پنهان کردن واکنش‌های استوری‌ها</string>
+    <string name="InuHideQuickReactionPicker">پنهان کردن نوار انتخاب و ارسال سریع ری‌اکشن</string>
     <string name="InuHideHashtagSuggestions">پنهان کردن پیشنهاد هشتگ</string>
     <string name="InuHideRichEditorButton">پنهان کردن دکمه‌ی ویرایشگر متن غنی</string>
     <string name="InuDisableProfileScrollSnap">غیرفعال کردن توقف پله‌ای پیمایش پروفایل</string>
