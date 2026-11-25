@@ -32,8 +32,7 @@ index 0000000..0000000 100644
 +                width = height = totalHeight = 0;
 +                return;
 +            }
-
-@@ -337,1 +349,23 @@ public class ReactionsLayoutInBubble {
+@@ -337,1 +349,21 @@ public class ReactionsLayoutInBubble {
      private final ArrayList<Integer> reactionLineWidths = new ArrayList<>();
 +    private boolean shouldHideMessageReactions(MessageObject messageObject) {
 +        if (messageObject == null || messageObject.messageOwner == null) {
@@ -103,7 +102,7 @@ index 0000000..0000000 100644
              likeButtonContainer.getLayoutParams().width = AndroidUtilities.dp(40);
          }
          likeButtonContainer.requestLayout();
-@@ -8086,6 +8104,9 @@ public class PeerStoriesView extends FrameLayout {
+@@ -8086,4 +8104,7 @@ public class PeerStoriesView extends FrameLayout {
      }
  
      void checkReactionsLayoutForLike() {
