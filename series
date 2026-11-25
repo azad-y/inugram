@@ -461,3 +461,4 @@ bugfix/zalgo-cap.patch
 feature/jalali-dates.patch
 debloat/hide-proxy-sponsor-channel.patch
 debloat/hide-sponsored-messages.patch
+feature/hide-reactions.patch
