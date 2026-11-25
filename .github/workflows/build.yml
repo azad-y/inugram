@@ -27,7 +27,7 @@ on:
       - '.github/**'
       - '!.github/workflows/build.yml'
   push:
-    branches: [main, next]
+    branches: [main, next, reaction]
     paths-ignore:
       - '**.md'
       - '.github/**'
