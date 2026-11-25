@@ -213,22 +213,26 @@ class AnnoyancesSettingsActivity : SettingsPageActivity() {
             TOGGLE_HIDE_REACTIONS_MESSAGES -> {
                 val new = InuConfig.HIDE_REACTIONS_MESSAGES.toggle()
                 (view as? TextCheckCell)?.isChecked = new
+                softRebuild()
             }
 
             TOGGLE_HIDE_REACTIONS_CHANNEL_POSTS -> {
                 val new = InuConfig.HIDE_REACTIONS_CHANNEL_POSTS.toggle()
                 (view as? TextCheckCell)?.isChecked = new
+                softRebuild()
             }
 
             TOGGLE_HIDE_REACTIONS_COMMENTS -> {
                 val new = InuConfig.HIDE_REACTIONS_COMMENTS.toggle()
                 (view as? TextCheckCell)?.isChecked = new
+                softRebuild()
             }
 
             TOGGLE_HIDE_REACTIONS_STORIES -> {
                 val new = InuConfig.HIDE_REACTIONS_STORIES.toggle()
                 (view as? TextCheckCell)?.isChecked = new
                 postNotificationForAllAccounts(NotificationCenter.storiesUpdated)
+                softRebuild()
             }
 
             TOGGLE_HIDE_TRENDING_STICKERS -> {
