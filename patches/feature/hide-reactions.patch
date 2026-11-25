@@ -71,8 +71,8 @@ index 0000000..0000000 100644
 +                likesReactionLayout.reset();
 +            }
 +            if (delegate != null) {
-                delegate.setIsLikesReaction(false);
-            }
++                delegate.setIsLikesReaction(false);
++            }
 +            return;
 +        }
          if (likesReactionShowing == show || currentStory.storyItem == null) {
