@@ -188,6 +188,10 @@
     <string name="InuDeleteForBothGroups">Group chats</string>
     <string name="InuSimpleAttachPopupAnimation">Simple attach popup animation</string>
     <string name="InuHidePaidReactionUpsell">Hide paid reaction upsell</string>
+    <string name="InuHideMessageReactions">Hide reactions in private and group messages</string>
+    <string name="InuHideChannelPostReactions">Hide reactions on channel posts</string>
+    <string name="InuHideCommentReactions">Hide reactions in comments and replies</string>
+    <string name="InuHideStoryReactions">Hide story reactions</string>
     <string name="InuHideHashtagSuggestions">Hide hashtag suggestions</string>
     <string name="InuHideRichEditorButton">Hide rich text editor button</string>
     <string name="InuDisableProfileScrollSnap">Disable profile scroll snap</string>
