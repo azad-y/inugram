@@ -28,7 +28,7 @@ index 0000000..0000000 100644
 +                return;
 +            }
              boolean forceLikeDislikeReactions = false; /*!messageObject.isOutOwner()
-@@ -348,1 +348,22 @@
+@@ -348,1 +348,21 @@
      private final ArrayList<Integer> reactionLineWidths = new ArrayList<>();
 +    private boolean shouldHideMessageReactions(MessageObject messageObject) {
 +        if (messageObject == null || messageObject.messageOwner == null) {
@@ -50,29 +50,6 @@ index 0000000..0000000 100644
 +        }
 +        return desu.inugram.InuConfig.HIDE_REACTIONS_MESSAGES.getValue();
 +    }
-    private final ArrayList<Integer> reactionLineWidths = new ArrayList<>();
-+
-+    private boolean shouldHideMessageReactions(MessageObject messageObject) {
-+        if (messageObject == null || messageObject.messageOwner == null) {
-+            return false;
-+        }
-+        if (messageObject.messageOwner.reply_to != null
-+                && (messageObject.messageOwner.reply_to.reply_to_msg_id != 0
-+                || messageObject.messageOwner.reply_to.reply_to_top_id != 0
-+                || messageObject.messageOwner.reply_to.reply_to_random_id != 0)) {
-+            return desu.inugram.InuConfig.HIDE_REACTIONS_COMMENTS.getValue();
-+        }
-+        long dialogId = messageObject.getDialogId();
-+        if (dialogId > 0) {
-+            return desu.inugram.InuConfig.HIDE_REACTIONS_MESSAGES.getValue();
-+        }
-+        TLRPC.Chat chat = MessagesController.getInstance(currentAccount).getChat(-dialogId);
-+        if (org.telegram.messenger.ChatObject.isChannelAndNotMegaGroup(chat)) {
-+            return desu.inugram.InuConfig.HIDE_REACTIONS_CHANNEL_POSTS.getValue();
-+        }
-+        return desu.inugram.InuConfig.HIDE_REACTIONS_MESSAGES.getValue();
-+    }
-     public void measure(int availableWidth, int gravity) {
 diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Stories/PeerStoriesView.java b/TMessagesProj/src/main/java/org/telegram/ui/Stories/PeerStoriesView.java
 index 0000000..0000000 100644
 --- a/TMessagesProj/src/main/java/org/telegram/ui/Stories/PeerStoriesView.java
