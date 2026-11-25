@@ -12,8 +12,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Components/Reactions/Re
 index 0000000..0000000 100644
 --- a/TMessagesProj/src/main/java/org/telegram/ui/Components/Reactions/ReactionsLayoutInBubble.java
 +++ b/TMessagesProj/src/main/java/org/telegram/ui/Components/Reactions/ReactionsLayoutInBubble.java
-@@ -172,6 +172,18 @@ public class ReactionsLayoutInBubble {
-         hasPaidReaction = false;
+@@ -170,3 +170,15 @@
          reactionButtons.clear();
          if (messageObject != null) {
 +            if (shouldHideMessageReactions(messageObject)) {
@@ -29,12 +28,29 @@ index 0000000..0000000 100644
 +                return;
 +            }
              boolean forceLikeDislikeReactions = false; /*!messageObject.isOutOwner()
-                     && !messageObject.isBotPendingDraft
-                     && BotForumHelper.isBotForum(currentAccount, messageObject.getDialogId())
-@@ -336,4 +348,25 @@ public class ReactionsLayoutInBubble {
-     }
- 
-     private final ArrayList<Integer> reactionLineWidths = new ArrayList<>();
+@@ -348,1 +360,22 @@
+     public void measure(int availableWidth, int gravity) {
++    private boolean shouldHideMessageReactions(MessageObject messageObject) {
++        if (messageObject == null || messageObject.messageOwner == null) {
++            return false;
++        }
++        if (messageObject.messageOwner.reply_to != null
++                && (messageObject.messageOwner.reply_to.reply_to_msg_id != 0
++                || messageObject.messageOwner.reply_to.reply_to_top_id != 0
++                || messageObject.messageOwner.reply_to.reply_to_random_id != 0)) {
++            return desu.inugram.InuConfig.HIDE_REACTIONS_COMMENTS.getValue();
++        }
++        long dialogId = messageObject.getDialogId();
++        if (dialogId > 0) {
++            return desu.inugram.InuConfig.HIDE_REACTIONS_MESSAGES.getValue();
++        }
++        TLRPC.Chat chat = MessagesController.getInstance(currentAccount).getChat(-dialogId);
++        if (org.telegram.messenger.ChatObject.isChannelAndNotMegaGroup(chat)) {
++            return desu.inugram.InuConfig.HIDE_REACTIONS_CHANNEL_POSTS.getValue();
++        }
++        return desu.inugram.InuConfig.HIDE_REACTIONS_MESSAGES.getValue();
++    }
+    private final ArrayList<Integer> reactionLineWidths = new ArrayList<>();
 +
 +    private boolean shouldHideMessageReactions(MessageObject messageObject) {
 +        if (messageObject == null || messageObject.messageOwner == null) {
