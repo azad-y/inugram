@@ -6,7 +6,7 @@ Subject: hide message, channel, reply and story reactions
 ---
  .../Reactions/ReactionsLayoutInBubble.java    | 30 ++++++++++++++++++++++++++++++
  .../telegram/ui/Stories/PeerStoriesView.java  | 21 +++++++++++++++++++--
- 2 files changed, 49 insertions(+), 2 deletions(-)
+ 2 files changed, 52 insertions(+), 2 deletions(-)
 
 diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Components/Reactions/ReactionsLayoutInBubble.java b/TMessagesProj/src/main/java/org/telegram/ui/Components/Reactions/ReactionsLayoutInBubble.java
 index 0000000..0000000 100644
@@ -28,7 +28,7 @@ index 0000000..0000000 100644
 +            width = height = totalHeight = 0;
 +            return;
 +        }
-@@ -356,6 +368,24 @@ public class ReactionsLayoutInBubble {
+@@ -356,6 +368,27 @@ public class ReactionsLayoutInBubble {
          isEmpty = reactionButtons.isEmpty();
      }
  
@@ -36,7 +36,10 @@ index 0000000..0000000 100644
 +        if (messageObject == null || messageObject.messageOwner == null) {
 +            return false;
 +        }
-+        if (messageObject.isReply()) {
++        if (messageObject.messageOwner.reply_to != null
++                && (messageObject.messageOwner.reply_to.reply_to_msg_id != 0
++                || messageObject.messageOwner.reply_to.reply_to_top_id != 0
++                || messageObject.messageOwner.reply_to.reply_to_random_id != 0)) {
 +            return desu.inugram.InuConfig.HIDE_REACTIONS_COMMENTS.getValue();
 +        }
 +        long dialogId = messageObject.getDialogId();
