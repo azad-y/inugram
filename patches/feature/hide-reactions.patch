@@ -26,7 +26,7 @@ index 0000000..0000000 100644
 +                width = height = totalHeight = 0;
 +                return;
 +            }
-@@ -378,1 +378,22 @@ public class ReactionsLayoutInBubble {
+@@ -378,1 +378,21 @@ public class ReactionsLayoutInBubble {
      private final ArrayList<Integer> reactionLineWidths = new ArrayList<>();
 +    private boolean shouldHideMessageReactions(MessageObject messageObject) {
 +        if (messageObject == null || messageObject.messageOwner == null) {
@@ -106,4 +106,3 @@ index 0000000..0000000 100644
          if (likesReactionLayout == null) {
              likesReactionLayout = new ReactionsContainerLayout(ReactionsContainerLayout.TYPE_STORY_LIKES, LaunchActivity.getLastFragment(), getContext(), currentAccount, new WrappedResourceProvider(resourcesProvider) {
                  @Override
-*** End Patch
