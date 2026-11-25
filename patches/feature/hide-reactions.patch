@@ -12,9 +12,10 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Components/Reactions/Re
 index 0000000..0000000 100644
 --- a/TMessagesProj/src/main/java/org/telegram/ui/Components/Reactions/ReactionsLayoutInBubble.java
 +++ b/TMessagesProj/src/main/java/org/telegram/ui/Components/Reactions/ReactionsLayoutInBubble.java
-@@ -170,3 +170,15 @@
+@@ -170,4 +170,16 @@
          reactionButtons.clear();
          if (messageObject != null) {
+             currentAccount = messageObject.currentAccount;
 +            if (shouldHideMessageReactions(messageObject)) {
 +                for (int i = 0; i < oldButtons.size(); i++) {
 +                    oldButtons.get(i).detach();
