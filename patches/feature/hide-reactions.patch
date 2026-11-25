@@ -31,7 +31,7 @@ index 0000000..0000000 100644
              boolean forceLikeDislikeReactions = false; /*!messageObject.isOutOwner()
                      && !messageObject.isBotPendingDraft
                      && BotForumHelper.isBotForum(currentAccount, messageObject.getDialogId())
-@@ -336,6 +348,27 @@ public class ReactionsLayoutInBubble {
+@@ -336,4 +348,25 @@ public class ReactionsLayoutInBubble {
      }
  
      private final ArrayList<Integer> reactionLineWidths = new ArrayList<>();
