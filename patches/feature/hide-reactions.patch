@@ -32,7 +32,7 @@ index 0000000..0000000 100644
 +                width = height = totalHeight = 0;
 +                return;
 +            }
-             boolean forceLikeDislikeReactions = false; /*!messageObject.isOutOwner()
+
 @@ -337,1 +349,21 @@ public class ReactionsLayoutInBubble {
      private final ArrayList<Integer> reactionLineWidths = new ArrayList<>();
 +    private boolean shouldHideMessageReactions(MessageObject messageObject) {
@@ -111,5 +111,3 @@ index 0000000..0000000 100644
 +            return;
 +        }
          if (likesReactionLayout == null) {
-             likesReactionLayout = new ReactionsContainerLayout(ReactionsContainerLayout.TYPE_STORY_LIKES, LaunchActivity.getLastFragment(), getContext(), currentAccount, new WrappedResourceProvider(resourcesProvider) {
-                 @Override
