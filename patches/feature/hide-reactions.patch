@@ -5,8 +5,8 @@ Subject: hide message, channel, reply and story reactions
 
 ---
  .../Reactions/ReactionsLayoutInBubble.java    | 33 +++++++++++++++++++++++++++++++++
- .../telegram/ui/Stories/PeerStoriesView.java  | 21 +++++++++++++++++++--
- 2 files changed, 52 insertions(+), 2 deletions(-)
+ .../telegram/ui/Stories/PeerStoriesView.java  | 25 +++++++++++++++++++++++--
+ 2 files changed, 56 insertions(+), 2 deletions(-)
 
 diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Components/Reactions/ReactionsLayoutInBubble.java b/TMessagesProj/src/main/java/org/telegram/ui/Components/Reactions/ReactionsLayoutInBubble.java
 index 0000000..0000000 100644
@@ -81,7 +81,14 @@ index 0000000..0000000 100644
          if (likesReactionShowing == show || currentStory.storyItem == null) {
              return;
          }
-@@ -5584,13 +5598,13 @@ public class PeerStoriesView extends FrameLayout {
+@@ -4747,2 +4761,6 @@ public class PeerStoriesView extends FrameLayout {
+         super.dispatchDraw(canvas);
++        if (desu.inugram.InuConfig.HIDE_REACTIONS_STORIES.getValue()) {
++            movingReaction = false;
++            drawReactionEffect = false;
++        }
+         if (movingReaction) {
+@@ -5584,13 +5602,13 @@ public class PeerStoriesView extends FrameLayout {
              if (repostButtonContainer != null) {
                  repostButtonContainer.setVisibility(allowRepost && !currentStory.isLive ? View.VISIBLE : View.GONE);
              }
@@ -97,7 +104,7 @@ index 0000000..0000000 100644
              likeButtonContainer.getLayoutParams().width = AndroidUtilities.dp(40);
          }
          likeButtonContainer.requestLayout();
-@@ -8086,6 +8100,9 @@ public class PeerStoriesView extends FrameLayout {
+@@ -8086,6 +8104,9 @@ public class PeerStoriesView extends FrameLayout {
      }
  
      void checkReactionsLayoutForLike() {
