@@ -12,11 +12,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Components/Reactions/Re
 index 0000000..0000000 100644
 --- a/TMessagesProj/src/main/java/org/telegram/ui/Components/Reactions/ReactionsLayoutInBubble.java
 +++ b/TMessagesProj/src/main/java/org/telegram/ui/Components/Reactions/ReactionsLayoutInBubble.java
-@@ -170,7 +170,19 @@ public class ReactionsLayoutInBubble {
-         this.tags = isTag;
-         this.messageObject = messageObject;
-         ArrayList<ReactionButton> oldButtons = new ArrayList<>(reactionButtons);
-         hasUnreadReactions = false;
+@@ -172,6 +172,18 @@ public class ReactionsLayoutInBubble {
          hasPaidReaction = false;
          reactionButtons.clear();
          if (messageObject != null) {
@@ -32,8 +28,14 @@ index 0000000..0000000 100644
 +                width = height = totalHeight = 0;
 +                return;
 +            }
-@@ -337,1 +349,21 @@ public class ReactionsLayoutInBubble {
+             boolean forceLikeDislikeReactions = false; /*!messageObject.isOutOwner()
+                     && !messageObject.isBotPendingDraft
+                     && BotForumHelper.isBotForum(currentAccount, messageObject.getDialogId())
+@@ -336,6 +348,27 @@ public class ReactionsLayoutInBubble {
+     }
+ 
      private final ArrayList<Integer> reactionLineWidths = new ArrayList<>();
++
 +    private boolean shouldHideMessageReactions(MessageObject messageObject) {
 +        if (messageObject == null || messageObject.messageOwner == null) {
 +            return false;
@@ -54,6 +56,7 @@ index 0000000..0000000 100644
 +        }
 +        return desu.inugram.InuConfig.HIDE_REACTIONS_MESSAGES.getValue();
 +    }
+     public void measure(int availableWidth, int gravity) {
 diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Stories/PeerStoriesView.java b/TMessagesProj/src/main/java/org/telegram/ui/Stories/PeerStoriesView.java
 index 0000000..0000000 100644
 --- a/TMessagesProj/src/main/java/org/telegram/ui/Stories/PeerStoriesView.java
