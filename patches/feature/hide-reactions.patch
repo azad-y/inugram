@@ -4,15 +4,15 @@ Date: Wed, 25 Nov 2026 00:00:00 +0000
 Subject: hide message, channel, reply and story reactions
 
 ---
- .../Reactions/ReactionsLayoutInBubble.java    | 28 ++++++++++++++++++++++
- .../telegram/ui/Stories/PeerStoriesView.java  | 16 ++++++++++++++
- 2 files changed, 47 insertions(+), 2 deletions(-)
+ .../Reactions/ReactionsLayoutInBubble.java    | 30 ++++++++++++++++++++++++++++++
+ .../telegram/ui/Stories/PeerStoriesView.java  | 21 +++++++++++++++++++--
+ 2 files changed, 49 insertions(+), 2 deletions(-)
 
 diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Components/Reactions/ReactionsLayoutInBubble.java b/TMessagesProj/src/main/java/org/telegram/ui/Components/Reactions/ReactionsLayoutInBubble.java
 index 0000000..0000000 100644
 --- a/TMessagesProj/src/main/java/org/telegram/ui/Components/Reactions/ReactionsLayoutInBubble.java
 +++ b/TMessagesProj/src/main/java/org/telegram/ui/Components/Reactions/ReactionsLayoutInBubble.java
-@@ -174,3 +174,16 @@ public class ReactionsLayoutInBubble {
+@@ -174,3 +174,15 @@ public class ReactionsLayoutInBubble {
          hasUnreadReactions = false;
          hasPaidReaction = false;
          reactionButtons.clear();
@@ -28,7 +28,7 @@ index 0000000..0000000 100644
 +            width = height = totalHeight = 0;
 +            return;
 +        }
-@@ -356,6 +369,21 @@ public class ReactionsLayoutInBubble {
+@@ -356,6 +368,24 @@ public class ReactionsLayoutInBubble {
          isEmpty = reactionButtons.isEmpty();
      }
  
@@ -57,7 +57,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Stories/PeerStoriesView
 index 0000000..0000000 100644
 --- a/TMessagesProj/src/main/java/org/telegram/ui/Stories/PeerStoriesView.java
 +++ b/TMessagesProj/src/main/java/org/telegram/ui/Stories/PeerStoriesView.java
-@@ -2614,6 +2614,17 @@ public class PeerStoriesView extends FrameLayout {
+@@ -2614,6 +2614,20 @@ public class PeerStoriesView extends FrameLayout {
      }
  
      private void showLikesReaction(boolean show) {
@@ -70,13 +70,15 @@ index 0000000..0000000 100644
 +                likesReactionLayout.setVisibility(View.GONE);
 +                likesReactionLayout.reset();
 +            }
-+            delegate.setIsLikesReaction(false);
++            if (delegate != null) {
+                delegate.setIsLikesReaction(false);
+            }
 +            return;
 +        }
          if (likesReactionShowing == show || currentStory.storyItem == null) {
              return;
          }
-@@ -5584,13 +5595,13 @@ public class PeerStoriesView extends FrameLayout {
+@@ -5584,13 +5598,13 @@ public class PeerStoriesView extends FrameLayout {
              if (repostButtonContainer != null) {
                  repostButtonContainer.setVisibility(allowRepost && !currentStory.isLive ? View.VISIBLE : View.GONE);
              }
@@ -92,7 +94,7 @@ index 0000000..0000000 100644
              likeButtonContainer.getLayoutParams().width = AndroidUtilities.dp(40);
          }
          likeButtonContainer.requestLayout();
-@@ -8086,6 +8097,9 @@ public class PeerStoriesView extends FrameLayout {
+@@ -8086,6 +8100,9 @@ public class PeerStoriesView extends FrameLayout {
      }
  
      void checkReactionsLayoutForLike() {
