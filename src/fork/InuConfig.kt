@@ -486,6 +486,18 @@ object InuConfig {
     val HIDE_REACTIONS_ENTRY = BoolItem("hide_reactions_entry", false)
 
     @JvmField
+    val HIDE_REACTIONS_MESSAGES = BoolItem("hide_reactions_messages", false)
+
+    @JvmField
+    val HIDE_REACTIONS_CHANNEL_POSTS = BoolItem("hide_reactions_channel_posts", false)
+
+    @JvmField
+    val HIDE_REACTIONS_COMMENTS = BoolItem("hide_reactions_comments", false)
+
+    @JvmField
+    val HIDE_REACTIONS_STORIES = BoolItem("hide_reactions_stories", false)
+
+    @JvmField
     val HIDE_SUGGESTION_BIRTHDAY_SETUP = BoolItem("hide_suggestion_birthday_setup", false)
 
     @JvmField
