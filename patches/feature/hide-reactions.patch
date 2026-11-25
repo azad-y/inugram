@@ -26,8 +26,8 @@ index 0000000..0000000 100644
 +                width = height = totalHeight = 0;
 +                return;
 +            }
-@@ -377,1 +389,22 @@ public class ReactionsLayoutInBubble {
-     public void measure(int availableWidth, int gravity) {
+@@ -378,1 +378,22 @@ public class ReactionsLayoutInBubble {
+     private final ArrayList<Integer> reactionLineWidths = new ArrayList<>();
 +    private boolean shouldHideMessageReactions(MessageObject messageObject) {
 +        if (messageObject == null || messageObject.messageOwner == null) {
 +            return false;
@@ -48,8 +48,6 @@ index 0000000..0000000 100644
 +        }
 +        return desu.inugram.InuConfig.HIDE_REACTIONS_MESSAGES.getValue();
 +    }
-+
-     }
 diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Stories/PeerStoriesView.java b/TMessagesProj/src/main/java/org/telegram/ui/Stories/PeerStoriesView.java
 index 0000000..0000000 100644
 --- a/TMessagesProj/src/main/java/org/telegram/ui/Stories/PeerStoriesView.java
