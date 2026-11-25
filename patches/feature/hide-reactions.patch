@@ -112,12 +112,9 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Components/ReactionsCon
 index 0000000..0000000 100644
 --- a/TMessagesProj/src/main/java/org/telegram/ui/Components/ReactionsContainerLayout.java
 +++ b/TMessagesProj/src/main/java/org/telegram/ui/Components/ReactionsContainerLayout.java
-@@ -1144,2 +1144,7 @@
-     public void setMessage(MessageObject message, TLRPC.ChatFull chatFull, boolean animated) {
-         this.messageObject = message;
+@@ -1145,0 +1146,5 @@
 +        setVisibility(View.VISIBLE);
 +        if (type == TYPE_DEFAULT && desu.inugram.InuConfig.HIDE_QUICK_REACTION_PICKER.getValue()) {
 +            setVisibility(View.GONE);
 +            return;
 +        }
-         int chosenCount = 0;
