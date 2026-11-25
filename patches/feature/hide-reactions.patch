@@ -5,8 +5,8 @@ Subject: hide message, channel, reply and story reactions
 
 ---
  .../Reactions/ReactionsLayoutInBubble.java    | 34 ++++++++++++++++++++++++++++++++++
- .../telegram/ui/Stories/PeerStoriesView.java  | 25 +++++++++++++++++++++++--
- 2 files changed, 59 insertions(+), 2 deletions(-)
+ .../telegram/ui/Stories/PeerStoriesView.java  | 23 +++++++++++++++++++++--
+ 2 files changed, 57 insertions(+), 2 deletions(-)
 
 diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Components/Reactions/ReactionsLayoutInBubble.java b/TMessagesProj/src/main/java/org/telegram/ui/Components/Reactions/ReactionsLayoutInBubble.java
 index 0000000..0000000 100644
