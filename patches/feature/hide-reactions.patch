@@ -61,7 +61,7 @@ index 0000000..0000000 100644
 +++ b/TMessagesProj/src/main/java/org/telegram/ui/Stories/PeerStoriesView.java
 @@ -2614,6 +2614,20 @@ public class PeerStoriesView extends FrameLayout {
      }
-
+ 
      private void showLikesReaction(boolean show) {
 +        if (desu.inugram.InuConfig.HIDE_REACTIONS_STORIES.getValue()) {
 +            likesReactionShowing = false;
@@ -105,7 +105,7 @@ index 0000000..0000000 100644
          likeButtonContainer.requestLayout();
 @@ -8086,6 +8104,9 @@ public class PeerStoriesView extends FrameLayout {
      }
-
+ 
      void checkReactionsLayoutForLike() {
 +        if (desu.inugram.InuConfig.HIDE_REACTIONS_STORIES.getValue()) {
 +            return;
