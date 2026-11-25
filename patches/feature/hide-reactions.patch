@@ -29,8 +29,7 @@ index 0000000..0000000 100644
 +                return;
 +            }
              boolean forceLikeDislikeReactions = false; /*!messageObject.isOutOwner()
-@@ -348,1 +348,21 @@
-     private final ArrayList<Integer> reactionLineWidths = new ArrayList<>();
+@@ -367,1 +367,21 @@
 +    private boolean shouldHideMessageReactions(MessageObject messageObject) {
 +        if (messageObject == null || messageObject.messageOwner == null) {
 +            return false;
@@ -51,6 +50,7 @@ index 0000000..0000000 100644
 +        }
 +        return desu.inugram.InuConfig.HIDE_REACTIONS_MESSAGES.getValue();
 +    }
+     public void measure(int availableWidth, int gravity) {
 diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Stories/PeerStoriesView.java b/TMessagesProj/src/main/java/org/telegram/ui/Stories/PeerStoriesView.java
 index 0000000..0000000 100644
 --- a/TMessagesProj/src/main/java/org/telegram/ui/Stories/PeerStoriesView.java
