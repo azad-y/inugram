@@ -12,7 +12,13 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Components/Reactions/Re
 index 0000000..0000000 100644
 --- a/TMessagesProj/src/main/java/org/telegram/ui/Components/Reactions/ReactionsLayoutInBubble.java
 +++ b/TMessagesProj/src/main/java/org/telegram/ui/Components/Reactions/ReactionsLayoutInBubble.java
-@@ -177,1 +177,13 @@ public class ReactionsLayoutInBubble {
+@@ -170,7 +170,19 @@ public class ReactionsLayoutInBubble {
+         this.tags = isTag;
+         this.messageObject = messageObject;
+         ArrayList<ReactionButton> oldButtons = new ArrayList<>(reactionButtons);
+         hasUnreadReactions = false;
+         hasPaidReaction = false;
+         reactionButtons.clear();
          if (messageObject != null) {
 +            if (shouldHideMessageReactions(messageObject)) {
 +                for (int i = 0; i < oldButtons.size(); i++) {
@@ -26,7 +32,8 @@ index 0000000..0000000 100644
 +                width = height = totalHeight = 0;
 +                return;
 +            }
-@@ -378,1 +378,21 @@ public class ReactionsLayoutInBubble {
+             boolean forceLikeDislikeReactions = false; /*!messageObject.isOutOwner()
+@@ -337,1 +349,21 @@ public class ReactionsLayoutInBubble {
      private final ArrayList<Integer> reactionLineWidths = new ArrayList<>();
 +    private boolean shouldHideMessageReactions(MessageObject messageObject) {
 +        if (messageObject == null || messageObject.messageOwner == null) {
@@ -54,7 +61,7 @@ index 0000000..0000000 100644
 +++ b/TMessagesProj/src/main/java/org/telegram/ui/Stories/PeerStoriesView.java
 @@ -2614,6 +2614,20 @@ public class PeerStoriesView extends FrameLayout {
      }
- 
+
      private void showLikesReaction(boolean show) {
 +        if (desu.inugram.InuConfig.HIDE_REACTIONS_STORIES.getValue()) {
 +            likesReactionShowing = false;
@@ -98,7 +105,7 @@ index 0000000..0000000 100644
          likeButtonContainer.requestLayout();
 @@ -8086,6 +8104,9 @@ public class PeerStoriesView extends FrameLayout {
      }
- 
+
      void checkReactionsLayoutForLike() {
 +        if (desu.inugram.InuConfig.HIDE_REACTIONS_STORIES.getValue()) {
 +            return;
