@@ -1,0 +1,108 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: azad <riazo@duck.com>
+Date: Wed, 25 Nov 2026 00:00:00 +0000
+Subject: hide message, channel, reply and story reactions
+
+---
+ .../Reactions/ReactionsLayoutInBubble.java    | 30 +++++++++++++++++++++
+ .../telegram/ui/Stories/PeerStoriesView.java  | 22 ++++++++++++---
+ 2 files changed, 49 insertions(+), 3 deletions(-)
+
+diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Components/Reactions/ReactionsLayoutInBubble.java b/TMessagesProj/src/main/java/org/telegram/ui/Components/Reactions/ReactionsLayoutInBubble.java
+index 0000000..0000000 100644
+--- a/TMessagesProj/src/main/java/org/telegram/ui/Components/Reactions/ReactionsLayoutInBubble.java
++++ b/TMessagesProj/src/main/java/org/telegram/ui/Components/Reactions/ReactionsLayoutInBubble.java
+@@ -174,6 +174,19 @@ public class ReactionsLayoutInBubble {
+         hasUnreadReactions = false;
+         hasPaidReaction = false;
+         reactionButtons.clear();
++        if (shouldHideMessageReactions(messageObject)) {
++            for (int i = 0; i < oldButtons.size(); i++) {
++                oldButtons.get(i).detach();
++            }
++            resetAnimation();
++            lastDrawingReactionButtons.clear();
++            lastDrawingReactionButtonsTmp.clear();
++            wasDrawn = false;
++            isEmpty = true;
++            width = height = totalHeight = 0;
++            return;
++        }
+         if (messageObject != null) {
+             boolean forceLikeDislikeReactions = false; /*!messageObject.isOutOwner()
+                     && !messageObject.isBotPendingDraft
+@@ -356,6 +369,21 @@ public class ReactionsLayoutInBubble {
+         isEmpty = reactionButtons.isEmpty();
+     }
+ 
++    private boolean shouldHideMessageReactions(MessageObject messageObject) {
++        if (messageObject == null || messageObject.messageOwner == null) {
++            return false;
++        }
++        if (messageObject.isReply()) {
++            return desu.inugram.InuConfig.HIDE_REACTIONS_COMMENTS.getValue();
++        }
++        long dialogId = messageObject.getDialogId();
++        if (dialogId > 0) {
++            return desu.inugram.InuConfig.HIDE_REACTIONS_MESSAGES.getValue();
++        }
++        TLRPC.Chat chat = MessagesController.getInstance(currentAccount).getChat(-dialogId);
++        if (org.telegram.messenger.ChatObject.isChannelAndNotMegaGroup(chat)) {
++            return desu.inugram.InuConfig.HIDE_REACTIONS_CHANNEL_POSTS.getValue();
++        }
++        return desu.inugram.InuConfig.HIDE_REACTIONS_MESSAGES.getValue();
++    }
++
+     private final ArrayList<Integer> reactionLineWidths = new ArrayList<>();
+     public void measure(int availableWidth, int gravity) {
+         height = 0;
+diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Stories/PeerStoriesView.java b/TMessagesProj/src/main/java/org/telegram/ui/Stories/PeerStoriesView.java
+index 0000000..0000000 100644
+--- a/TMessagesProj/src/main/java/org/telegram/ui/Stories/PeerStoriesView.java
++++ b/TMessagesProj/src/main/java/org/telegram/ui/Stories/PeerStoriesView.java
+@@ -2614,6 +2614,17 @@ public class PeerStoriesView extends FrameLayout {
+     }
+ 
+     private void showLikesReaction(boolean show) {
++        if (desu.inugram.InuConfig.HIDE_REACTIONS_STORIES.getValue()) {
++            likesReactionShowing = false;
++            if (likesReactionLayout != null) {
++                if (likesReactionLayout.getReactionsWindow() != null) {
++                    likesReactionLayout.getReactionsWindow().dismiss();
++                }
++                likesReactionLayout.setVisibility(View.GONE);
++                likesReactionLayout.reset();
++            }
++            delegate.setIsLikesReaction(false);
++            return;
++        }
+         if (likesReactionShowing == show || currentStory.storyItem == null) {
+             return;
+         }
+@@ -5584,13 +5595,13 @@ public class PeerStoriesView extends FrameLayout {
+             if (repostButtonContainer != null) {
+                 repostButtonContainer.setVisibility(allowRepost && !currentStory.isLive ? View.VISIBLE : View.GONE);
+             }
+-            likeButtonContainer.setVisibility(!isFailed && !currentStory.isLive ? View.VISIBLE : View.GONE);
++            likeButtonContainer.setVisibility(!desu.inugram.InuConfig.HIDE_REACTIONS_STORIES.getValue() && !isFailed && !currentStory.isLive ? View.VISIBLE : View.GONE);
+         } else {
+             shareButton.setVisibility(allowShare && !currentStory.isLive ? View.VISIBLE : View.INVISIBLE);
+             if (repostButtonContainer != null) {
+                 repostButtonContainer.setVisibility(View.GONE);
+             }
+-            likeButtonContainer.setVisibility(!isSelf && !currentStory.isLive ? View.VISIBLE : View.GONE);
++            likeButtonContainer.setVisibility(!desu.inugram.InuConfig.HIDE_REACTIONS_STORIES.getValue() && !isSelf && !currentStory.isLive ? View.VISIBLE : View.GONE);
+             likeButtonContainer.getLayoutParams().width = AndroidUtilities.dp(40);
+         }
+         likeButtonContainer.requestLayout();
+@@ -8086,6 +8097,9 @@ public class PeerStoriesView extends FrameLayout {
+     }
+ 
+     void checkReactionsLayoutForLike() {
++        if (desu.inugram.InuConfig.HIDE_REACTIONS_STORIES.getValue()) {
++            return;
++        }
+         if (likesReactionLayout == null) {
+             likesReactionLayout = new ReactionsContainerLayout(ReactionsContainerLayout.TYPE_STORY_LIKES, LaunchActivity.getLastFragment(), getContext(), currentAccount, new WrappedResourceProvider(resourcesProvider) {
+                 @Override
+*** End Patch
