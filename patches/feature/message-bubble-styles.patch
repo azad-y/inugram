@@ -52,7 +52,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/ActionBar/MessageDrawab
 +            rad = inuBubbleRadius();
 +            nearRad = inuBubbleNearRadius();
          }
-@@ -650,5 +668,5 @@ public class MessageDrawable extends Drawable {
+@@ -675,5 +693,5 @@ public class MessageDrawable extends Drawable {
          } else {
 -            rad = dp(SharedConfig.bubbleRadius);
 -            nearRad = dp(Math.min(6, SharedConfig.bubbleRadius));
