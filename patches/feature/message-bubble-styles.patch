@@ -13,7 +13,6 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/ActionBar/MessageDrawab
 @@ -347,5 +347,25 @@ public class MessageDrawable extends Drawable {
          }
      }
-
 +    private int inuBubbleRadius() {
 +        int radius = desu.inugram.InuConfig.IOS_MESSAGE_BUBBLES.getValue() ? 18 : SharedConfig.bubbleRadius;
 +        if (desu.inugram.InuConfig.ROUNDED_MESSAGE_BUBBLES.getValue()) {
