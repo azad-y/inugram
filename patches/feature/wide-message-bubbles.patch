@@ -10,7 +10,7 @@ Subject: [PATCH] Add optional wider message bubbles
 diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.java b/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.java
 --- a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.java
 +++ b/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.java
-@@ -6908,10 +6908,10 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
+@@ -6908,5 +6908,5 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                  final boolean isArticle = messageObject.type == MessageObject.TYPE_ARTICLE;
                  if (AndroidUtilities.isTablet()) {
 -                    maxWidth = (isArticle ? MessageObject.getTabletChatWidth() : AndroidUtilities.getMinTabletSide()) - dp((isArticle ? 40 : 80) + (isSideMenuEnabled ? ChatActivity.SIDE_MENU_WIDTH : drawAvatar ? 42 : 0));
@@ -19,7 +19,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
 -                    maxWidth = Math.min(getParentWidth(), AndroidUtilities.displaySize.y) - dp((isArticle ? 40 : 80) + (isSideMenuEnabled ? ChatActivity.SIDE_MENU_WIDTH : drawAvatar ? 42 : 0));
 +                    maxWidth = Math.min(getParentWidth(), AndroidUtilities.displaySize.y) - dp((isArticle ? 40 : (desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 64 : 80)) + (isSideMenuEnabled ? ChatActivity.SIDE_MENU_WIDTH : drawAvatar ? 42 : 0));
                  }
-@@ -7321,10 +7321,10 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
+@@ -7321,6 +7321,6 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                      if (currentMessageObject.isRepostPreview) {
                          linkPreviewMaxWidth = currentMessageObject.getMaxMessageTextWidth();
                      } else if (AndroidUtilities.isTablet()) {
@@ -29,7 +29,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
 -                        linkPreviewMaxWidth = getParentWidth() - dp(80 + (isSideMenued ? 68 : drawAvatar ? 52 : 0));
 +                        linkPreviewMaxWidth = getParentWidth() - dp((desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 64 : 80) + (isSideMenued ? 68 : drawAvatar ? 52 : 0));
                      }
-@@ -7260,10 +7260,10 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
+@@ -7260,4 +7260,4 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                  } else if (messageObject.isSponsored()) {
                      if (AndroidUtilities.isTablet()) {
 -                        backgroundWidth = Math.min(AndroidUtilities.getMinTabletSide() - dp(50), dp(270));
@@ -38,7 +38,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
 -                        backgroundWidth = Math.min(getParentWidth() - dp(50), dp(270));
 +                        backgroundWidth = Math.min(getParentWidth() - dp(desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 34 : 50), dp(desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 286 : 270));
                      }
-@@ -8383,10 +8383,10 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
+@@ -8383,5 +8383,5 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                  canChangeRadius = false;
                  if (AndroidUtilities.isTablet()) {
 -                    backgroundWidth = Math.min(AndroidUtilities.getMinTabletSide() - dp(50 + (isSideMenued ? ChatActivity.SIDE_MENU_WIDTH : drawAvatar ? 52 : 0)), dp(270));
