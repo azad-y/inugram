@@ -96,7 +96,7 @@ object InstantViewHelper {
         if (viewer == null) return
         val page = viewer.currentPageLayout?.adapter?.currentPage ?: return
         val state = stateFor(viewer, page)
-        if (!state.detectionDone || state.unavailable) return
+        if (state.unavailable) return
 
         val label = LocaleController.getString(
             when {
