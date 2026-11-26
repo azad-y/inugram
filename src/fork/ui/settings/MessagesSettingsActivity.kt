@@ -227,6 +227,22 @@ class MessagesSettingsActivity : SettingsPageActivity() {
             )
         )
         items.add(
+            mkTwoLineCheckItem(
+                TOGGLE_IOS_MESSAGE_BUBBLES,
+                R.string.InuIosMessageBubbles,
+                R.string.InuIosMessageBubblesInfo,
+                InuConfig.IOS_MESSAGE_BUBBLES.value,
+            )
+        )
+        items.add(
+            mkTwoLineCheckItem(
+                TOGGLE_ROUNDED_MESSAGE_BUBBLES,
+                R.string.InuRoundedMessageBubbles,
+                R.string.InuRoundedMessageBubblesInfo,
+                InuConfig.ROUNDED_MESSAGE_BUBBLES.value,
+            )
+        )
+        items.add(
             UItem.asCheck(
                 TOGGLE_BUBBLE_TAILS,
                 LocaleController.getString(R.string.InuBubbleTails),
@@ -385,6 +401,18 @@ class MessagesSettingsActivity : SettingsPageActivity() {
 
             TOGGLE_WIDE_MESSAGE_BUBBLES -> {
                 val new = InuConfig.WIDE_MESSAGE_BUBBLES.toggle()
+                (view as? NotificationsCheckCell)?.isChecked = new
+                softRebuild()
+            }
+
+            TOGGLE_IOS_MESSAGE_BUBBLES -> {
+                val new = InuConfig.IOS_MESSAGE_BUBBLES.toggle()
+                (view as? NotificationsCheckCell)?.isChecked = new
+                softRebuild()
+            }
+
+            TOGGLE_ROUNDED_MESSAGE_BUBBLES -> {
+                val new = InuConfig.ROUNDED_MESSAGE_BUBBLES.toggle()
                 (view as? NotificationsCheckCell)?.isChecked = new
                 softRebuild()
             }
@@ -556,6 +584,8 @@ class MessagesSettingsActivity : SettingsPageActivity() {
         private val BUTTON_EDITED_MESSAGE_DATE_MODE = InuUtils.generateId()
         private val TOGGLE_BUBBLE_TAILS = InuUtils.generateId()
         private val TOGGLE_WIDE_MESSAGE_BUBBLES = InuUtils.generateId()
+        private val TOGGLE_IOS_MESSAGE_BUBBLES = InuUtils.generateId()
+        private val TOGGLE_ROUNDED_MESSAGE_BUBBLES = InuUtils.generateId()
         private val SECTION_COMPACT_MODE = InuUtils.generateId()
         private val BUTTON_DOUBLE_TAP_INCOMING = InuUtils.generateId()
         private val BUTTON_DOUBLE_TAP_OUTGOING = InuUtils.generateId()
@@ -622,6 +652,8 @@ class MessagesSettingsActivity : SettingsPageActivity() {
                 SearchRegistry.Entry("edited-message-date", R.string.InuEditedMessageDateMode, BUTTON_EDITED_MESSAGE_DATE_MODE),
                 SearchRegistry.Entry("bubble-tails", R.string.InuBubbleTails, TOGGLE_BUBBLE_TAILS),
                 SearchRegistry.Entry("wide-message-bubbles", R.string.InuWideMessageBubbles, TOGGLE_WIDE_MESSAGE_BUBBLES),
+                SearchRegistry.Entry("ios-message-bubbles", R.string.InuIosMessageBubbles, TOGGLE_IOS_MESSAGE_BUBBLES),
+                SearchRegistry.Entry("rounded-message-bubbles", R.string.InuRoundedMessageBubbles, TOGGLE_ROUNDED_MESSAGE_BUBBLES),
                 SearchRegistry.Entry("compact-mode", R.string.CompactMode, SECTION_COMPACT_MODE),
                 SearchRegistry.Entry("double-tap-incoming", R.string.InuIncomingMessages, BUTTON_DOUBLE_TAP_INCOMING),
                 SearchRegistry.Entry("double-tap-outgoing", R.string.InuOutgoingMessages, BUTTON_DOUBLE_TAP_OUTGOING),
