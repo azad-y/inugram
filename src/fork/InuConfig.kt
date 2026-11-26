@@ -820,6 +820,9 @@ object InuConfig {
     val BUBBLE_TAILS = BoolItem("bubble_tails", true)
 
     @JvmField
+    val WIDE_MESSAGE_BUBBLES = BoolItem("wide_message_bubbles", false)
+
+    @JvmField
     val INTERACTIVE_CHAT_PREVIEW = BoolItem("disable_chat_preview_expand", true)
 
     @JvmField
