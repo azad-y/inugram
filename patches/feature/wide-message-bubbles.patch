@@ -4,9 +4,9 @@ Date: Thu, 26 Nov 2026 14:30:00 +0330
 Subject: [PATCH] Add optional wider message bubbles
 
 ---
- .../org/telegram/ui/Cells/ChatMessageAudio.java |  8 ++++----
+ .../org/telegram/ui/Cells/ChatMessageAudio.java | 12 ++++++------
  .../org/telegram/ui/Cells/ChatMessageCell.java  | 36 ++++++++++++++++++------------------
- 2 files changed, 22 insertions(+), 22 deletions(-)
+ 2 files changed, 24 insertions(+), 24 deletions(-)
 
 diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.java b/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.java
 --- a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.java
@@ -60,7 +60,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
 -                            backgroundWidth = Math.min(getParentWidth() - dp(50 + (isSideMenued ? ChatActivity.SIDE_MENU_WIDTH : drawAvatar ? 52 : 0)), dp(300));
 +                            backgroundWidth = Math.min(getParentWidth() - dp((desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 34 : 50) + (isSideMenued ? ChatActivity.SIDE_MENU_WIDTH : drawAvatar ? 52 : 0)), dp(desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 316 : 300));
                          }
-@@ -8785,10 +8785,10 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
+@@ -8785,7 +8785,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
  
                      if (MessageObject.getMedia(messageObject.messageOwner) instanceof TLRPC.TL_messageMediaGeoLive) {
                          if (AndroidUtilities.isTablet()) {
@@ -70,7 +70,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
 -                            backgroundWidth = Math.min(getParentWidth() - dp(59 + (isSideMenued ? ChatActivity.SIDE_MENU_WIDTH : drawAvatar ? 52 : 0)), dp(252 + 37));
 +                            backgroundWidth = Math.min(getParentWidth() - dp((desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 43 : 59) + (isSideMenued ? ChatActivity.SIDE_MENU_WIDTH : drawAvatar ? 52 : 0)), dp(desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 268 + 37 : 252 + 37));
                          }
-@@ -8835,10 +8835,10 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
+@@ -8835,6 +8835,6 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                      } else if (!TextUtils.isEmpty(MessageObject.getMedia(messageObject.messageOwner).title)) {
                          if (AndroidUtilities.isTablet()) {
 -                            backgroundWidth = Math.min(AndroidUtilities.getMinTabletSide() - dp(50 + (isSideMenued ? ChatActivity.SIDE_MENU_WIDTH : drawAvatar ? 52 : 0)), dp(252 + 37));
@@ -79,7 +79,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
 -                            backgroundWidth = Math.min(getParentWidth() - dp(50 + (isSideMenued ? ChatActivity.SIDE_MENU_WIDTH : drawAvatar ? 52 : 0)), dp(252 + 37));
 +                            backgroundWidth = Math.min(getParentWidth() - dp((desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 34 : 50) + (isSideMenued ? ChatActivity.SIDE_MENU_WIDTH : drawAvatar ? 52 : 0)), dp(desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 268 + 37 : 252 + 37));
                          }
-@@ -8869,10 +8869,10 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
+@@ -8869,6 +8869,6 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                      } else {
                          if (AndroidUtilities.isTablet()) {
 -                            backgroundWidth = Math.min(AndroidUtilities.getMinTabletSide() - dp(50 + (isSideMenued ? ChatActivity.SIDE_MENU_WIDTH : drawAvatar ? 52 : 0)), dp(252 + 37));
@@ -92,7 +92,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
 diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageAudio.java b/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageAudio.java
 --- a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageAudio.java
 +++ b/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageAudio.java
-@@ -43,9 +43,9 @@ class ChatMessageAudio {
+@@ -43,7 +43,7 @@ class ChatMessageAudio {
          );
          int maxWidth;
          if (AndroidUtilities.isTablet()) {
@@ -102,7 +102,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageAudio.
 -            cell.backgroundWidth = maxWidth = Math.min(cell.getParentWidth() - dp(50 + (cell.isSideMenued ? ChatActivity.SIDE_MENU_WIDTH : drawAvatar ? 52 : 0)), dp(270));
 +            cell.backgroundWidth = maxWidth = Math.min(cell.getParentWidth() - dp((desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 34 : 50) + (cell.isSideMenued ? ChatActivity.SIDE_MENU_WIDTH : drawAvatar ? 52 : 0)), dp(desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 286 : 270));
          }
-@@ -88,11 +88,11 @@ class ChatMessageAudio {
+@@ -88,9 +88,9 @@ class ChatMessageAudio {
          cell.drawName = cell.isSavedChat && !messageObject.isOutOwner() && (messageObject.getSavedDialogId() < 0 || messageObject.getSavedDialogId() == UserObject.ANONYMOUS) || (messageObject.isFromGroup() && messageObject.isSupergroup() || messageObject.isImportedForward() && messageObject.messageOwner.fwd_from.from_id == null) && (cell.currentPosition == null || (cell.currentPosition.flags & MessageObject.POSITION_FLAG_TOP) != 0);
          int maxWidth;
          if (AndroidUtilities.isTablet()) {
