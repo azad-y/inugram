@@ -179,6 +179,8 @@
     <string name="InuStickerTimeModeHideCompletely">پنهان کردن کامل</string>
     <string name="InuStickerSizeDialogMessage">آفرین سگ خوب!</string>
     <string name="InuBubbleTails">دُم حباب پیام</string>
+    <string name="InuWideMessageBubbles">حباب پیام عریض‌تر</string>
+    <string name="InuWideMessageBubblesInfo">با فعال‌کردن این گزینه، حباب پیام‌ها کمی عریض‌تر می‌شود و حاشیهٔ کناری صفحه حفظ می‌شود.</string>
     <string name="InuMiscPreviewForwardedFrom">سگی</string>
     <string name="InuMiscPreviewForwardedMessage">هاپ!! این رو دیدی؟</string>
     <string name="InuMiscPreviewEditedMessage">دیگه غلط املایی نداریم، پنجه‌ای قول!</string>
