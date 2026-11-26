@@ -179,6 +179,8 @@
     <string name="InuStickerTimeModeHideCompletely">Hide completely</string>
     <string name="InuStickerSizeDialogMessage">good puppy!</string>
     <string name="InuBubbleTails">Bubble tails</string>
+    <string name="InuWideMessageBubbles">Wide message bubbles</string>
+    <string name="InuWideMessageBubblesInfo">Allows message bubbles to use a little more horizontal space while keeping side margins.</string>
     <string name="InuMiscPreviewForwardedFrom">doggo</string>
     <string name="InuMiscPreviewForwardedMessage">woof!! did you see this?</string>
     <string name="InuMiscPreviewEditedMessage">pawsitively, no more typos</string>
