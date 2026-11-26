@@ -10,7 +10,7 @@ Subject: [PATCH] Add iOS-style and rounded message bubble options
 diff --git a/TMessagesProj/src/main/java/org/telegram/ui/ActionBar/MessageDrawable.java b/TMessagesProj/src/main/java/org/telegram/ui/ActionBar/MessageDrawable.java
 --- a/TMessagesProj/src/main/java/org/telegram/ui/ActionBar/MessageDrawable.java
 +++ b/TMessagesProj/src/main/java/org/telegram/ui/ActionBar/MessageDrawable.java
-@@ -347,6 +347,24 @@ public class MessageDrawable extends Drawable {
+@@ -347,5 +347,25 @@ public class MessageDrawable extends Drawable {
          }
      }
 
@@ -37,21 +37,21 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/ActionBar/MessageDrawab
      public Drawable getBackgroundDrawable() {
          int newRad;
          if (overrideRoundRadius != 0) {
-@@ -356,7 +374,7 @@ public class MessageDrawable extends Drawable {
+@@ -356,5 +374,5 @@ public class MessageDrawable extends Drawable {
          } else if (overrideRounding > 0) {
              newRad = 0;
          } else {
 -            newRad = dp(SharedConfig.bubbleRadius);
 +            newRad = inuBubbleRadius();
          }
-@@ -493,7 +511,7 @@ public class MessageDrawable extends Drawable {
+@@ -493,5 +511,5 @@ public class MessageDrawable extends Drawable {
          if (gradientShader == null && !isSelected && crossfadeFromDrawable == null) {
              return null;
          }
 -        int newRad = dp(SharedConfig.bubbleRadius);
 +        int newRad = inuBubbleRadius();
          int idx;
-@@ -600,11 +618,11 @@ public class MessageDrawable extends Drawable {
+@@ -600,5 +618,5 @@ public class MessageDrawable extends Drawable {
          } else {
 -            rad = dp(SharedConfig.bubbleRadius);
 -            nearRad = dp(Math.min(6, SharedConfig.bubbleRadius));
@@ -60,7 +60,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/ActionBar/MessageDrawab
          }
 -        int smallRad = dp(6);
 +        int smallRad = dp(desu.inugram.InuConfig.IOS_MESSAGE_BUBBLES.getValue() ? 7 : desu.inugram.InuConfig.ROUNDED_MESSAGE_BUBBLES.getValue() ? 8 : 6);
-@@ -650,11 +668,11 @@ public class MessageDrawable extends Drawable {
+@@ -650,5 +668,5 @@ public class MessageDrawable extends Drawable {
          } else {
 -            rad = dp(SharedConfig.bubbleRadius);
 -            nearRad = dp(Math.min(6, SharedConfig.bubbleRadius));
@@ -69,7 +69,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/ActionBar/MessageDrawab
          }
 -        int smallRad = dp(6);
 +        int smallRad = dp(desu.inugram.InuConfig.IOS_MESSAGE_BUBBLES.getValue() ? 7 : desu.inugram.InuConfig.ROUNDED_MESSAGE_BUBBLES.getValue() ? 8 : 6);
-@@ -929,12 +947,18 @@ public static class PathDrawParams {
+@@ -929,14 +947,20 @@ public static class PathDrawParams {
          Rect lastRect = new Rect();
          boolean lastDrawFullTop;
          boolean lastDrawFullBottom;
