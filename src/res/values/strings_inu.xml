@@ -195,8 +195,8 @@
     <string name="InuHideCommentReactions">Hide reactions in comments and replies</string>
     <string name="InuHideStoryReactions">Hide story reactions</string>
     <string name="InuHideQuickReactionPicker">Hide quick reaction picker</string>
-    <string name="InuHideChannelPostShareButton">Hide channel post share button</string>
-    <string name="InuHideChannelPostShareButtonInfo">Hide the small share arrow beside channel posts without disabling forwarding elsewhere</string>
+    <string name="InuHideChannelPostShareButton">Hide message share buttons</string>
+    <string name="InuHideChannelPostShareButtonInfo">Hide share arrows beside messages throughout the app without disabling forwarding</string>
     <string name="InuHideHashtagSuggestions">Hide hashtag suggestions</string>
     <string name="InuHideRichEditorButton">Hide rich text editor button</string>
     <string name="InuDisableProfileScrollSnap">Disable profile scroll snap</string>
