@@ -1,0 +1,91 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Inugram <dev@inugram.local>
+Date: Thu, 26 Nov 2026 19:00:00 +0330
+Subject: [PATCH] Add iOS-style and rounded message bubble options
+
+---
+ .../telegram/ui/ActionBar/MessageDrawable.java | 40 ++++++++++++++++++++------
+ 1 file changed, 31 insertions(+), 9 deletions(-)
+
+diff --git a/TMessagesProj/src/main/java/org/telegram/ui/ActionBar/MessageDrawable.java b/TMessagesProj/src/main/java/org/telegram/ui/ActionBar/MessageDrawable.java
+--- a/TMessagesProj/src/main/java/org/telegram/ui/ActionBar/MessageDrawable.java
++++ b/TMessagesProj/src/main/java/org/telegram/ui/ActionBar/MessageDrawable.java
+@@ -347,6 +347,24 @@ public class MessageDrawable extends Drawable {
+         }
+     }
+
++    private int inuBubbleRadius() {
++        int radius = desu.inugram.InuConfig.IOS_MESSAGE_BUBBLES.getValue() ? 18 : SharedConfig.bubbleRadius;
++        if (desu.inugram.InuConfig.ROUNDED_MESSAGE_BUBBLES.getValue()) {
++            radius += 3;
++        }
++        return dp(Math.min(radius, 22));
++    }
++
++    private int inuBubbleNearRadius() {
++        int radius = desu.inugram.InuConfig.IOS_MESSAGE_BUBBLES.getValue() ? 7 : 6;
++        if (desu.inugram.InuConfig.ROUNDED_MESSAGE_BUBBLES.getValue()) {
++            radius += 2;
++        }
++        int maxRadius = desu.inugram.InuConfig.IOS_MESSAGE_BUBBLES.getValue() ? 18 : SharedConfig.bubbleRadius;
++        if (desu.inugram.InuConfig.ROUNDED_MESSAGE_BUBBLES.getValue()) {
++            maxRadius += 3;
++        }
++        return dp(Math.min(radius, Math.min(maxRadius, 22)));
++    }
++
+     public Drawable getBackgroundDrawable() {
+         int newRad;
+         if (overrideRoundRadius != 0) {
+@@ -356,7 +374,7 @@ public class MessageDrawable extends Drawable {
+         } else if (overrideRounding > 0) {
+             newRad = 0;
+         } else {
+-            newRad = dp(SharedConfig.bubbleRadius);
++            newRad = inuBubbleRadius();
+         }
+@@ -493,7 +511,7 @@ public class MessageDrawable extends Drawable {
+         if (gradientShader == null && !isSelected && crossfadeFromDrawable == null) {
+             return null;
+         }
+-        int newRad = dp(SharedConfig.bubbleRadius);
++        int newRad = inuBubbleRadius();
+         int idx;
+@@ -600,11 +618,11 @@ public class MessageDrawable extends Drawable {
+         } else {
+-            rad = dp(SharedConfig.bubbleRadius);
+-            nearRad = dp(Math.min(6, SharedConfig.bubbleRadius));
++            rad = inuBubbleRadius();
++            nearRad = inuBubbleNearRadius();
+         }
+-        int smallRad = dp(6);
++        int smallRad = dp(desu.inugram.InuConfig.IOS_MESSAGE_BUBBLES.getValue() ? 7 : desu.inugram.InuConfig.ROUNDED_MESSAGE_BUBBLES.getValue() ? 8 : 6);
+@@ -650,11 +668,11 @@ public class MessageDrawable extends Drawable {
+         } else {
+-            rad = dp(SharedConfig.bubbleRadius);
+-            nearRad = dp(Math.min(6, SharedConfig.bubbleRadius));
++            rad = inuBubbleRadius();
++            nearRad = inuBubbleNearRadius();
+         }
+-        int smallRad = dp(6);
++        int smallRad = dp(desu.inugram.InuConfig.IOS_MESSAGE_BUBBLES.getValue() ? 7 : desu.inugram.InuConfig.ROUNDED_MESSAGE_BUBBLES.getValue() ? 8 : 6);
+@@ -926,12 +944,18 @@ public class MessageDrawable extends Drawable {
+         Path path = new Path();
+         Rect lastRect = new Rect();
+         boolean lastDrawFullTop;
+         boolean lastDrawFullBottom;
++        boolean inuLastIosStyle;
++        boolean inuLastRounded;
+ 
+         public boolean invalidatePath(Rect bounds, boolean drawFullBottom, boolean drawFullTop) {
+-            boolean invalidate = lastRect.isEmpty() || lastRect.top != bounds.top || lastRect.bottom != bounds.bottom || lastRect.right != bounds.right || lastRect.left != bounds.left || lastDrawFullTop != drawFullTop || lastDrawFullBottom != drawFullBottom || !drawFullTop || !drawFullBottom;
++            boolean inuIosStyle = desu.inugram.InuConfig.IOS_MESSAGE_BUBBLES.getValue();
++            boolean inuRounded = desu.inugram.InuConfig.ROUNDED_MESSAGE_BUBBLES.getValue();
++            boolean invalidate = lastRect.isEmpty() || lastRect.top != bounds.top || lastRect.bottom != bounds.bottom || lastRect.right != bounds.right || lastRect.left != bounds.left || lastDrawFullTop != drawFullTop || lastDrawFullBottom != drawFullBottom || !drawFullTop || !drawFullBottom || inuLastIosStyle != inuIosStyle || inuLastRounded != inuRounded;
+             lastDrawFullTop = drawFullTop;
+             lastDrawFullBottom = drawFullBottom;
++            inuLastIosStyle = inuIosStyle;
++            inuLastRounded = inuRounded;
+             lastRect.set(bounds);
+             return invalidate;
+         }
