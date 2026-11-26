@@ -10,7 +10,12 @@ Subject: [PATCH] Add iOS-style and rounded message bubble options
 diff --git a/TMessagesProj/src/main/java/org/telegram/ui/ActionBar/MessageDrawable.java b/TMessagesProj/src/main/java/org/telegram/ui/ActionBar/MessageDrawable.java
 --- a/TMessagesProj/src/main/java/org/telegram/ui/ActionBar/MessageDrawable.java
 +++ b/TMessagesProj/src/main/java/org/telegram/ui/ActionBar/MessageDrawable.java
-@@ -347,5 +347,25 @@ public class MessageDrawable extends Drawable {
+@@ -334,8 +334,26 @@ private int dp(float value) {
+     private int dp(float value) {
+         if (currentType == TYPE_PREVIEW) {
+             return (int) Math.ceil(3 * value);
+         } else {
+             return AndroidUtilities.dp(value);
          }
      }
 +    private int inuBubbleRadius() {
@@ -20,7 +25,6 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/ActionBar/MessageDrawab
 +        }
 +        return dp(Math.min(radius, 22));
 +    }
-+
 +    private int inuBubbleNearRadius() {
 +        int radius = desu.inugram.InuConfig.IOS_MESSAGE_BUBBLES.getValue() ? 7 : 6;
 +        if (desu.inugram.InuConfig.ROUNDED_MESSAGE_BUBBLES.getValue()) {
@@ -32,10 +36,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/ActionBar/MessageDrawab
 +        }
 +        return dp(Math.min(radius, Math.min(maxRadius, 22)));
 +    }
-+
-     public Drawable getBackgroundDrawable() {
-         int newRad;
-         if (overrideRoundRadius != 0) {
+     public Paint getPaint() {
 @@ -356,5 +374,5 @@ public class MessageDrawable extends Drawable {
          } else if (overrideRounding > 0) {
              newRad = 0;
