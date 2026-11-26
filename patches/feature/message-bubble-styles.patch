@@ -52,7 +52,23 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/ActionBar/MessageDrawab
 +            rad = inuBubbleRadius();
 +            nearRad = inuBubbleNearRadius();
          }
-@@ -675,5 +693,5 @@ public class MessageDrawable extends Drawable {
+@@ -675,21 +693,21 @@ public class MessageDrawable extends Drawable {
+     public Path makePath(PathDrawParams pathDrawCacheParams) {
+         Rect bounds = getBounds();
+         int padding = dp(2);
+         int rad;
+         int nearRad;
+         if (overrideRoundRadius != 0) {
+             rad = overrideRoundRadius;
+             nearRad = overrideRoundRadius;
+         } else if (overrideRounding > 0) {
+             rad = AndroidUtilities.lerp(dp(SharedConfig.bubbleRadius), Math.min(bounds.width(), bounds.height()) / 2, overrideRounding);
+             nearRad = AndroidUtilities.lerp(dp(Math.min(6, SharedConfig.bubbleRadius)), Math.min(bounds.width(), bounds.height()) / 2, overrideRounding);
+         } else if (currentType == TYPE_PREVIEW) {
+             rad = dp(6);
+             nearRad = dp(6);
+         } else {
+             rad = dp(SharedConfig.bubbleRadius);
          } else {
 -            rad = dp(SharedConfig.bubbleRadius);
 -            nearRad = dp(Math.min(6, SharedConfig.bubbleRadius));
