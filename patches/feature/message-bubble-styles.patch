@@ -52,7 +52,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/ActionBar/MessageDrawab
 +            rad = inuBubbleRadius();
 +            nearRad = inuBubbleNearRadius();
          }
-@@ -693,8 +711,8 @@
+@@ -672,8 +690,8 @@
          } else if (currentType == TYPE_PREVIEW) {
              rad = dp(6);
              nearRad = dp(6);
