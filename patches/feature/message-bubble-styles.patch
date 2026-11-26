@@ -45,10 +45,17 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/ActionBar/MessageDrawab
 -            newRad = dp(SharedConfig.bubbleRadius);
 +            newRad = inuBubbleRadius();
          }
-@@ -493,5 +511,5 @@ public class MessageDrawable extends Drawable {
+@@ -500,5 +518,12 @@ public Drawable getShadowDrawable() {
          if (gradientShader == null && !isSelected && crossfadeFromDrawable == null) {
              return null;
          }
++        boolean inu_tails = desu.inugram.InuConfig.BUBBLE_TAILS.getValue();
++        if (inu_lastShadowTails != inu_tails) {
++            inu_lastShadowTails = inu_tails;
++            for (int a = 0; a < currentShadowDrawableRadius.length; a++) {
++                currentShadowDrawableRadius[a] = -1;
++            }
++        }
 -        int newRad = dp(SharedConfig.bubbleRadius);
 +        int newRad = inuBubbleRadius();
          int idx;
