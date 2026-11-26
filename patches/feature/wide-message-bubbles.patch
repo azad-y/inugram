@@ -48,7 +48,6 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
 -                    backgroundWidth = Math.min(getParentWidth() - dp(50 + (isSideMenued ? ChatActivity.SIDE_MENU_WIDTH : drawAvatar ? 52 : 0)), dp(270));
 +                    backgroundWidth = Math.min(getParentWidth() - dp((desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 34 : 50) + (isSideMenued ? ChatActivity.SIDE_MENU_WIDTH : drawAvatar ? 52 : 0)), dp(desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 286 : 270));
                  }
-
 @@ -8662,8 +8662,8 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                      if (currentPosition == null) {
                          backgroundWidth = messageObject.getMaxMessageTextWidth();
