@@ -1,0 +1,18 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Inugram <dev@inugram.local>
+Date: Thu, 26 Nov 2026 15:00:00 +0330
+Subject: [PATCH] Add option to hide channel post share button
+
+---
+ .../org/telegram/ui/Cells/ChatMessageCell.java | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.java b/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.java
+--- a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.java
++++ b/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.java
+@@ -15829,6 +15829,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
+     protected boolean checkNeedDrawShareButton(MessageObject messageObject) {
++        if (desu.inugram.InuConfig.HIDE_CHANNEL_POST_SHARE_BUTTON.getValue() && messageObject.isFromChannel()) return false;
+         if (isReportChat) return false;
+         if (currentMessageObject.deleted && !currentMessageObject.deletedByThanos) return false;
+         if (currentMessageObject.isSponsored()) return false;
