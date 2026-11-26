@@ -10,7 +10,7 @@ Subject: [PATCH] Add iOS-style and rounded message bubble options
 diff --git a/TMessagesProj/src/main/java/org/telegram/ui/ActionBar/MessageDrawable.java b/TMessagesProj/src/main/java/org/telegram/ui/ActionBar/MessageDrawable.java
 --- a/TMessagesProj/src/main/java/org/telegram/ui/ActionBar/MessageDrawable.java
 +++ b/TMessagesProj/src/main/java/org/telegram/ui/ActionBar/MessageDrawable.java
-@@ -334,9 +334,27 @@ private int dp(float value) {
+@@ -334,7 +334,25 @@ private int dp(float value) {
      private int dp(float value) {
          if (currentType == TYPE_PREVIEW) {
              return (int) Math.ceil(3 * value);
@@ -58,7 +58,7 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/ActionBar/MessageDrawab
 @@ -605,1 +623,1 @@
 -        int smallRad = dp(6);
 +        int smallRad = dp(desu.inugram.InuConfig.IOS_MESSAGE_BUBBLES.getValue() ? 7 : desu.inugram.InuConfig.ROUNDED_MESSAGE_BUBBLES.getValue() ? 8 : 6);
-@@ -650,6 +668,6 @@ public class MessageDrawable extends Drawable {
+@@ -650,5 +668,5 @@ public class MessageDrawable extends Drawable {
          } else {
 -            rad = dp(SharedConfig.bubbleRadius);
 -            nearRad = dp(Math.min(6, SharedConfig.bubbleRadius));
