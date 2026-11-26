@@ -4,82 +4,145 @@ Date: Thu, 26 Nov 2026 19:00:00 +0330
 Subject: [PATCH] Add iOS-style and rounded message bubble options
 
 ---
- .../telegram/ui/ActionBar/MessageDrawable.java | 40 ++++++++++++++++++++------
- 1 file changed, 31 insertions(+), 9 deletions(-)
+ .../org/telegram/ui/ActionBar/MessageDrawable.java | 48 ++++++++++++++++------
+ 1 file changed, 35 insertions(+), 13 deletions(-)
 
 diff --git a/TMessagesProj/src/main/java/org/telegram/ui/ActionBar/MessageDrawable.java b/TMessagesProj/src/main/java/org/telegram/ui/ActionBar/MessageDrawable.java
+index 0000000..0000000 100644
 --- a/TMessagesProj/src/main/java/org/telegram/ui/ActionBar/MessageDrawable.java
 +++ b/TMessagesProj/src/main/java/org/telegram/ui/ActionBar/MessageDrawable.java
-@@ -334,9 +334,27 @@ private int dp(float value) {
-     private int dp(float value) {
-         if (currentType == TYPE_PREVIEW) {
-             return (int) Math.ceil(3 * value);
-         } else {
-             return AndroidUtilities.dp(value);
+@@ -80,6 +80,7 @@ public class MessageDrawable extends Drawable {
+     private Drawable[][] backgroundDrawable = new Drawable[4][4];
+     private boolean inu_lastBackgroundTails = desu.inugram.InuConfig.BUBBLE_TAILS.getValue();
+     private boolean inu_lastShadowTails = desu.inugram.InuConfig.BUBBLE_TAILS.getValue();
++    private int inu_lastStyle = desu.inugram.helpers.chat.BubbleStyleHelper.styleKey();
+     private int[][] backgroundDrawableColor = new int[][]{
+             {0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff},
+             {0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff},
+@@ -341,6 +342,21 @@ public class MessageDrawable extends Drawable {
          }
      }
-+    private int inuBubbleRadius() {
-+        int radius = desu.inugram.InuConfig.IOS_MESSAGE_BUBBLES.getValue() ? 18 : SharedConfig.bubbleRadius;
-+        if (desu.inugram.InuConfig.ROUNDED_MESSAGE_BUBBLES.getValue()) {
-+            radius += 3;
-+        }
-+        return dp(Math.min(radius, 22));
-+    }
-+    private int inuBubbleNearRadius() {
-+        int radius = desu.inugram.InuConfig.IOS_MESSAGE_BUBBLES.getValue() ? 7 : 6;
-+        if (desu.inugram.InuConfig.ROUNDED_MESSAGE_BUBBLES.getValue()) {
-+            radius += 2;
-+        }
-+        int maxRadius = desu.inugram.InuConfig.IOS_MESSAGE_BUBBLES.getValue() ? 18 : SharedConfig.bubbleRadius;
-+        if (desu.inugram.InuConfig.ROUNDED_MESSAGE_BUBBLES.getValue()) {
-+            maxRadius += 3;
-+        }
-+        return dp(Math.min(radius, Math.min(maxRadius, 22)));
-+    }
  
++    private void inu_checkBubbleStyle() {
++        int style = desu.inugram.helpers.chat.BubbleStyleHelper.styleKey();
++        if (inu_lastStyle == style) {
++            return;
++        }
++        inu_lastStyle = style;
++        for (int a = 0; a < backgroundDrawable.length; a++) {
++            Arrays.fill(backgroundDrawable[a], null);
++            Arrays.fill(currentBackgroundDrawableRadius[a], -1);
++        }
++        Arrays.fill(currentShadowDrawableRadius, -1);
++        transitionDrawable = null;
++        transitionDrawableColor = 0;
++    }
++
      public Paint getPaint() {
-@@ -356,5 +374,5 @@ public class MessageDrawable extends Drawable {
+         return paint;
+     }
+@@ -350,6 +366,7 @@ public class MessageDrawable extends Drawable {
+     }
+ 
+     public Drawable getBackgroundDrawable() {
++        inu_checkBubbleStyle();
+         boolean inu_tails = desu.inugram.InuConfig.BUBBLE_TAILS.getValue();
+         if (inu_lastBackgroundTails != inu_tails) {
+             inu_lastBackgroundTails = inu_tails;
+@@ -366,7 +383,7 @@ public class MessageDrawable extends Drawable {
          } else if (overrideRounding > 0) {
              newRad = 0;
          } else {
 -            newRad = dp(SharedConfig.bubbleRadius);
-+            newRad = inuBubbleRadius();
++            newRad = dp(desu.inugram.helpers.chat.BubbleStyleHelper.radius());
          }
-@@ -600,4 +618,4 @@ public class MessageDrawable extends Drawable {
+         int idx;
+         if (isTopNear && isBottomNear) {
+@@ -455,6 +472,7 @@ public class MessageDrawable extends Drawable {
+     }
+ 
+     public Drawable getTransitionDrawable(int color) {
++        inu_checkBubbleStyle();
+         if (transitionDrawable == null) {
+             Bitmap bitmap = Bitmap.createBitmap(dp(50), dp(40), Bitmap.Config.ARGB_8888);
+             Canvas canvas = new Canvas(bitmap);
+@@ -491,6 +509,7 @@ public class MessageDrawable extends Drawable {
+         if (gradientShader == null && !isSelected && crossfadeFromDrawable == null) {
+             return null;
+         }
++        inu_checkBubbleStyle();
+         boolean inu_tails = desu.inugram.InuConfig.BUBBLE_TAILS.getValue();
+         if (inu_lastShadowTails != inu_tails) {
+             inu_lastShadowTails = inu_tails;
+@@ -498,7 +517,7 @@ public class MessageDrawable extends Drawable {
+                 currentShadowDrawableRadius[a] = -1;
+             }
+         }
+-        int newRad = dp(SharedConfig.bubbleRadius);
++        int newRad = dp(desu.inugram.helpers.chat.BubbleStyleHelper.radius());
+         int idx;
+         if (isTopNear && isBottomNear) {
+             idx = 3;
+@@ -625,16 +644,16 @@ public class MessageDrawable extends Drawable {
+             rad = overrideRoundRadius;
+             nearRad = overrideRoundRadius;
+         } else if (overrideRounding > 0) {
+-            rad = AndroidUtilities.lerp(dp(SharedConfig.bubbleRadius), Math.min(bounds.width(), bounds.height()) / 2, overrideRounding);
+-            nearRad = AndroidUtilities.lerp(dp(Math.min(6, SharedConfig.bubbleRadius)), Math.min(bounds.width(), bounds.height()) / 2, overrideRounding);
++            rad = AndroidUtilities.lerp(dp(desu.inugram.helpers.chat.BubbleStyleHelper.radius()), Math.min(bounds.width(), bounds.height()) / 2, overrideRounding);
++            nearRad = AndroidUtilities.lerp(dp(desu.inugram.helpers.chat.BubbleStyleHelper.nearRadius()), Math.min(bounds.width(), bounds.height()) / 2, overrideRounding);
+         } else if (currentType == TYPE_PREVIEW) {
+             rad = dp(6);
+             nearRad = dp(6);
          } else {
 -            rad = dp(SharedConfig.bubbleRadius);
 -            nearRad = dp(Math.min(6, SharedConfig.bubbleRadius));
-+            rad = inuBubbleRadius();
-+            nearRad = inuBubbleNearRadius();
++            rad = dp(desu.inugram.helpers.chat.BubbleStyleHelper.radius());
++            nearRad = dp(desu.inugram.helpers.chat.BubbleStyleHelper.nearRadius());
          }
-@@ -676,2 +694,2 @@
+-        int smallRad = dp(6);
++        int smallRad = dp(desu.inugram.helpers.chat.BubbleStyleHelper.tailRadius());
+ 
+         Paint p = paintToUse == null ? paint : paintToUse;
+ 
+@@ -688,16 +707,16 @@ public class MessageDrawable extends Drawable {
+             rad = overrideRoundRadius;
+             nearRad = overrideRoundRadius;
+         } else if (overrideRounding > 0) {
+-            rad = AndroidUtilities.lerp(dp(SharedConfig.bubbleRadius), Math.min(bounds.width(), bounds.height()) / 2, overrideRounding);
+-            nearRad = AndroidUtilities.lerp(dp(Math.min(6, SharedConfig.bubbleRadius)), Math.min(bounds.width(), bounds.height()) / 2, overrideRounding);
++            rad = AndroidUtilities.lerp(dp(desu.inugram.helpers.chat.BubbleStyleHelper.radius()), Math.min(bounds.width(), bounds.height()) / 2, overrideRounding);
++            nearRad = AndroidUtilities.lerp(dp(desu.inugram.helpers.chat.BubbleStyleHelper.nearRadius()), Math.min(bounds.width(), bounds.height()) / 2, overrideRounding);
+         } else if (currentType == TYPE_PREVIEW) {
+             rad = dp(6);
+             nearRad = dp(6);
+         } else {
 -            rad = dp(SharedConfig.bubbleRadius);
 -            nearRad = dp(Math.min(6, SharedConfig.bubbleRadius));
-+            rad = inuBubbleRadius();
-+            nearRad = inuBubbleNearRadius();
-@@ -679,1 +697,1 @@
++            rad = dp(desu.inugram.helpers.chat.BubbleStyleHelper.radius());
++            nearRad = dp(desu.inugram.helpers.chat.BubbleStyleHelper.nearRadius());
+         }
 -        int smallRad = dp(6);
-+        int smallRad = dp(desu.inugram.InuConfig.IOS_MESSAGE_BUBBLES.getValue() ? 7 : desu.inugram.InuConfig.ROUNDED_MESSAGE_BUBBLES.getValue() ? 8 : 6);
-
-@@ -929,14 +947,20 @@ public static class PathDrawParams {
-         Rect lastRect = new Rect();
++        int smallRad = dp(desu.inugram.helpers.chat.BubbleStyleHelper.tailRadius());
+         int top = Math.max(bounds.top, 0);
+         boolean drawFullBottom, drawFullTop;
+         if (pathDrawCacheParams != null && bounds.height() < currentBackgroundHeight) {
+@@ -932,14 +951,17 @@ public class MessageDrawable extends Drawable {
          boolean lastDrawFullTop;
          boolean lastDrawFullBottom;
          boolean inu_lastTails = true;
-+        boolean inuLastIosStyle;
-+        boolean inuLastRounded;
++        int inu_lastPathStyle = desu.inugram.helpers.chat.BubbleStyleHelper.styleKey();
  
          public boolean invalidatePath(Rect bounds, boolean drawFullBottom, boolean drawFullTop) {
              boolean inu_tails = desu.inugram.InuConfig.BUBBLE_TAILS.getValue();
 -            boolean invalidate = lastRect.isEmpty() || lastRect.top != bounds.top || lastRect.bottom != bounds.bottom || lastRect.right != bounds.right || lastRect.left != bounds.left || lastDrawFullTop != drawFullTop || lastDrawFullBottom != drawFullBottom || !drawFullTop || !drawFullBottom || inu_lastTails != inu_tails;
-+            boolean inuIosStyle = desu.inugram.InuConfig.IOS_MESSAGE_BUBBLES.getValue();
-+            boolean inuRounded = desu.inugram.InuConfig.ROUNDED_MESSAGE_BUBBLES.getValue();
-+            boolean invalidate = lastRect.isEmpty() || lastRect.top != bounds.top || lastRect.bottom != bounds.bottom || lastRect.right != bounds.right || lastRect.left != bounds.left || lastDrawFullTop != drawFullTop || lastDrawFullBottom != drawFullBottom || !drawFullTop || !drawFullBottom || inu_lastTails != inu_tails || inuLastIosStyle != inuIosStyle || inuLastRounded != inuRounded;
++            int inu_style = desu.inugram.helpers.chat.BubbleStyleHelper.styleKey();
++            boolean invalidate = inu_lastPathStyle != inu_style || lastRect.isEmpty() || lastRect.top != bounds.top || lastRect.bottom != bounds.bottom || lastRect.right != bounds.right || lastRect.left != bounds.left || lastDrawFullTop != drawFullTop || lastDrawFullBottom != drawFullBottom || !drawFullTop || !drawFullBottom || inu_lastTails != inu_tails;
              lastDrawFullTop = drawFullTop;
              lastDrawFullBottom = drawFullBottom;
-             inu_lastTails = inu_tails;
-+            inuLastIosStyle = inuIosStyle;
-+            inuLastRounded = inuRounded;
              lastRect.set(bounds);
+             inu_lastTails = inu_tails;
++            inu_lastPathStyle = inu_style;
              return invalidate;
          }
+ 
