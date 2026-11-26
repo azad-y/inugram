@@ -4,8 +4,9 @@ Date: Thu, 26 Nov 2026 14:30:00 +0330
 Subject: [PATCH] Add optional wider message bubbles
 
 ---
- .../org/telegram/ui/Cells/ChatMessageCell.java | 36 ++++++++++++++++++------------------
- 1 file changed, 18 insertions(+), 18 deletions(-)
+ .../org/telegram/ui/Cells/ChatMessageAudio.java |  8 ++++----
+ .../org/telegram/ui/Cells/ChatMessageCell.java  | 36 ++++++++++++++++++------------------
+ 2 files changed, 22 insertions(+), 22 deletions(-)
 
 diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.java b/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.java
 --- a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.java
@@ -87,3 +88,31 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
 -                            backgroundWidth = Math.min(getParentWidth() - dp(50 + (isSideMenued ? ChatActivity.SIDE_MENU_WIDTH : drawAvatar ? 52 : 0)), dp(252 + 37));
 +                            backgroundWidth = Math.min(getParentWidth() - dp((desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 34 : 50) + (isSideMenued ? ChatActivity.SIDE_MENU_WIDTH : drawAvatar ? 52 : 0)), dp(desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 268 + 37 : 252 + 37));
                          }
+
+diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageAudio.java b/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageAudio.java
+--- a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageAudio.java
++++ b/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageAudio.java
+@@ -43,9 +43,9 @@ class ChatMessageAudio {
+         );
+         int maxWidth;
+         if (AndroidUtilities.isTablet()) {
+-            cell.backgroundWidth = maxWidth = Math.min(AndroidUtilities.getMinTabletSide() - dp(50 + (cell.isSideMenued ? ChatActivity.SIDE_MENU_WIDTH : drawAvatar ? 52 : 0)), dp(270));
++            cell.backgroundWidth = maxWidth = Math.min(AndroidUtilities.getMinTabletSide() - dp((desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 34 : 50) + (cell.isSideMenued ? ChatActivity.SIDE_MENU_WIDTH : drawAvatar ? 52 : 0)), dp(desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 286 : 270));
+         } else {
+-            cell.backgroundWidth = maxWidth = Math.min(cell.getParentWidth() - dp(50 + (cell.isSideMenued ? ChatActivity.SIDE_MENU_WIDTH : drawAvatar ? 52 : 0)), dp(270));
++            cell.backgroundWidth = maxWidth = Math.min(cell.getParentWidth() - dp((desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 34 : 50) + (cell.isSideMenued ? ChatActivity.SIDE_MENU_WIDTH : drawAvatar ? 52 : 0)), dp(desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 286 : 270));
+         }
+@@ -88,11 +88,11 @@ class ChatMessageAudio {
+         cell.drawName = cell.isSavedChat && !messageObject.isOutOwner() && (messageObject.getSavedDialogId() < 0 || messageObject.getSavedDialogId() == UserObject.ANONYMOUS) || (messageObject.isFromGroup() && messageObject.isSupergroup() || messageObject.isImportedForward() && messageObject.messageOwner.fwd_from.from_id == null) && (cell.currentPosition == null || (cell.currentPosition.flags & MessageObject.POSITION_FLAG_TOP) != 0);
+         int maxWidth;
+         if (AndroidUtilities.isTablet()) {
+-            maxWidth = AndroidUtilities.getMinTabletSide() - dp(50 + (cell.isSideMenued ? ChatActivity.SIDE_MENU_WIDTH : drawAvatar ? 52 : 0));
+-            cell.backgroundWidth = Math.min(dp(270), maxWidth);
++            maxWidth = AndroidUtilities.getMinTabletSide() - dp((desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 34 : 50) + (cell.isSideMenued ? ChatActivity.SIDE_MENU_WIDTH : drawAvatar ? 52 : 0));
++            cell.backgroundWidth = Math.min(dp(desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 286 : 270), maxWidth);
+         } else {
+-            maxWidth = cell.getParentWidth() - dp(50 + (cell.isSideMenued ? ChatActivity.SIDE_MENU_WIDTH : drawAvatar ? 52 : 0));
+-            cell.backgroundWidth = Math.min(dp(270), maxWidth);
++            maxWidth = cell.getParentWidth() - dp((desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 34 : 50) + (cell.isSideMenued ? ChatActivity.SIDE_MENU_WIDTH : drawAvatar ? 52 : 0));
++            cell.backgroundWidth = Math.min(dp(desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 286 : 270), maxWidth);
+         }
