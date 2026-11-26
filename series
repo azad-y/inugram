@@ -464,3 +464,4 @@ debloat/hide-sponsored-messages.patch
 feature/hide-reactions.patch
 feature/wide-message-bubbles.patch
 feature/hide-channel-post-share-button.patch
+feature/message-bubble-styles.patch
