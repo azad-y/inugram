@@ -489,6 +489,9 @@ object InuConfig {
     val HIDE_QUICK_REACTION_PICKER = BoolItem("hide_quick_reaction_picker", false)
 
     @JvmField
+    val HIDE_CHANNEL_POST_SHARE_BUTTON = BoolItem("hide_channel_post_share_button", false)
+
+    @JvmField
     val HIDE_REACTIONS_MESSAGES = BoolItem("hide_reactions_messages", false)
 
     @JvmField
