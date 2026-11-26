@@ -446,7 +446,7 @@ class AnnoyancesSettingsActivity : SettingsPageActivity() {
                 SearchRegistry.Entry("hide-comment-reactions", R.string.InuHideCommentReactions, TOGGLE_HIDE_REACTIONS_COMMENTS),
                 SearchRegistry.Entry("hide-story-reactions", R.string.InuHideStoryReactions, TOGGLE_HIDE_REACTIONS_STORIES),
                 SearchRegistry.Entry("hide-quick-reaction-picker", R.string.InuHideQuickReactionPicker, TOGGLE_HIDE_QUICK_REACTION_PICKER),
-                SearchRegistry.Entry("hide-channel-post-share-button", R.string.InuHideChannelPostShareButton, TOGGLE_HIDE_CHANNEL_POST_SHARE_BUTTON),
+                SearchRegistry.Entry("hide-message-share-buttons", R.string.InuHideChannelPostShareButton, TOGGLE_HIDE_CHANNEL_POST_SHARE_BUTTON),
                 SearchRegistry.Entry("hide-repost-to-story", R.string.InuHideRepostToStory, TOGGLE_HIDE_REPOST_TO_STORY),
                 SearchRegistry.Entry("hide-trending-stickers", R.string.InuHideTrendingStickers, TOGGLE_HIDE_TRENDING_STICKERS),
                 SearchRegistry.Entry("disable-sensitive", R.string.InuDisableSensitive, TOGGLE_DISABLE_SENSITIVE),
