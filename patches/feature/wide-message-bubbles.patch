@@ -1,103 +1,49 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Inugram <dev@inugram.local>
-Date: Thu, 26 Nov 2026 13:50:00 +0330
+Date: Thu, 26 Nov 2026 14:30:00 +0330
 Subject: [PATCH] Add optional wider message bubbles
 
 ---
- .../org/telegram/ui/Cells/ChatMessageCell.java | 38 ++++++++++++++------
- 1 file changed, 26 insertions(+), 12 deletions(-)
+ .../org/telegram/ui/Cells/ChatMessageCell.java | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
 diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.java b/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.java
-index 0000000..0000000 100644
 --- a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.java
 +++ b/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.java
-@@ -2272,15 +2272,15 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
-                     if (isChat && !messageObject.isOutOwner() && messageObject.needDrawAvatar()) {
--                        maxWidth = AndroidUtilities.getMinTabletSide() - AndroidUtilities.dp(122);
-+                        maxWidth = AndroidUtilities.getMinTabletSide() - AndroidUtilities.dp(desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 106 : 122);
-                         drawName = true;
+@@ -6908,10 +6908,10 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
+                 final boolean isArticle = messageObject.type == MessageObject.TYPE_ARTICLE;
+                 if (AndroidUtilities.isTablet()) {
+-                    maxWidth = (isArticle ? MessageObject.getTabletChatWidth() : AndroidUtilities.getMinTabletSide()) - dp((isArticle ? 40 : 80) + (isSideMenuEnabled ? ChatActivity.SIDE_MENU_WIDTH : drawAvatar ? 42 : 0));
++                    maxWidth = (isArticle ? MessageObject.getTabletChatWidth() : AndroidUtilities.getMinTabletSide()) - dp((isArticle ? 40 : (desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 64 : 80)) + (isSideMenuEnabled ? ChatActivity.SIDE_MENU_WIDTH : drawAvatar ? 42 : 0));
+                 } else {
+-                    maxWidth = Math.min(getParentWidth(), AndroidUtilities.displaySize.y) - dp((isArticle ? 40 : 80) + (isSideMenuEnabled ? ChatActivity.SIDE_MENU_WIDTH : drawAvatar ? 42 : 0));
++                    maxWidth = Math.min(getParentWidth(), AndroidUtilities.displaySize.y) - dp((isArticle ? 40 : (desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 64 : 80)) + (isSideMenuEnabled ? ChatActivity.SIDE_MENU_WIDTH : drawAvatar ? 42 : 0));
+                 }
+@@ -7321,10 +7321,10 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
+                     if (currentMessageObject.isRepostPreview) {
+                         linkPreviewMaxWidth = currentMessageObject.getMaxMessageTextWidth();
+                     } else if (AndroidUtilities.isTablet()) {
+-                        linkPreviewMaxWidth = AndroidUtilities.getMinTabletSide() - dp(80 + (isSideMenued ? 68 : drawAvatar ? 52 : 0));
++                        linkPreviewMaxWidth = AndroidUtilities.getMinTabletSide() - dp((desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 64 : 80) + (isSideMenued ? 68 : drawAvatar ? 52 : 0));
                      } else {
-                         drawName = messageObject.messageOwner.to_id.channel_id != 0 && !messageObject.isOutOwner();
--                        maxWidth = AndroidUtilities.getMinTabletSide() - AndroidUtilities.dp(80);
-+                        maxWidth = AndroidUtilities.getMinTabletSide() - AndroidUtilities.dp(desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 64 : 80);
+-                        linkPreviewMaxWidth = getParentWidth() - dp(80 + (isSideMenued ? 68 : drawAvatar ? 52 : 0));
++                        linkPreviewMaxWidth = getParentWidth() - dp((desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 64 : 80) + (isSideMenued ? 68 : drawAvatar ? 52 : 0));
                      }
-                 } else {
-                     if (isChat && !messageObject.isOutOwner() && messageObject.needDrawAvatar()) {
--                        maxWidth = Math.min(AndroidUtilities.displaySize.x, AndroidUtilities.displaySize.y) - AndroidUtilities.dp(122);
-+                        maxWidth = Math.min(AndroidUtilities.displaySize.x, AndroidUtilities.displaySize.y) - AndroidUtilities.dp(desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 106 : 122);
-                         drawName = true;
+@@ -7260,10 +7260,10 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
+                 } else if (messageObject.isSponsored()) {
+                     if (AndroidUtilities.isTablet()) {
+-                        backgroundWidth = Math.min(AndroidUtilities.getMinTabletSide() - dp(50), dp(270));
++                        backgroundWidth = Math.min(AndroidUtilities.getMinTabletSide() - dp(desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 34 : 50), dp(desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 286 : 270));
                      } else {
--                        maxWidth = Math.min(AndroidUtilities.displaySize.x, AndroidUtilities.displaySize.y) - AndroidUtilities.dp(80);
-+                        maxWidth = Math.min(AndroidUtilities.displaySize.x, AndroidUtilities.displaySize.y) - AndroidUtilities.dp(desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 64 : 80);
-                         drawName = messageObject.messageOwner.to_id.channel_id != 0 && !messageObject.isOutOwner();
+-                        backgroundWidth = Math.min(getParentWidth() - dp(50), dp(270));
++                        backgroundWidth = Math.min(getParentWidth() - dp(desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 34 : 50), dp(desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 286 : 270));
                      }
-@@ -2376,11 +2376,11 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
-                         if (isChat && messageObject.needDrawAvatar() && !currentMessageObject.isOut()) {
--                            linkPreviewMaxWidth = AndroidUtilities.getMinTabletSide() - AndroidUtilities.dp(132);
-+                            linkPreviewMaxWidth = AndroidUtilities.getMinTabletSide() - AndroidUtilities.dp(desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 116 : 132);
-                         } else {
--                            linkPreviewMaxWidth = AndroidUtilities.getMinTabletSide() - AndroidUtilities.dp(80);
-+                            linkPreviewMaxWidth = AndroidUtilities.getMinTabletSide() - AndroidUtilities.dp(desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 64 : 80);
-                         }
-                     } else {
-                         if (isChat && messageObject.needDrawAvatar() && !currentMessageObject.isOutOwner()) {
--                            linkPreviewMaxWidth = Math.min(AndroidUtilities.displaySize.x, AndroidUtilities.displaySize.y) - AndroidUtilities.dp(132);
-+                            linkPreviewMaxWidth = Math.min(AndroidUtilities.displaySize.x, AndroidUtilities.displaySize.y) - AndroidUtilities.dp(desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 116 : 132);
-                         } else {
--                            linkPreviewMaxWidth = Math.min(AndroidUtilities.displaySize.x, AndroidUtilities.displaySize.y) - AndroidUtilities.dp(80);
-+                            linkPreviewMaxWidth = Math.min(AndroidUtilities.displaySize.x, AndroidUtilities.displaySize.y) - AndroidUtilities.dp(desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 64 : 80);
-                         }
-@@ -2931,3 +2931,3 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
--                    backgroundWidth = Math.min(AndroidUtilities.getMinTabletSide() - AndroidUtilities.dp(isChat && messageObject.needDrawAvatar() && !messageObject.isOutOwner() ? 102 : 50), AndroidUtilities.dp(270));
-+                    backgroundWidth = Math.min(AndroidUtilities.getMinTabletSide() - AndroidUtilities.dp(isChat && messageObject.needDrawAvatar() && !messageObject.isOutOwner() ? (desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 86 : 102) : (desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 34 : 50)), AndroidUtilities.dp(desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 286 : 270));
+@@ -8383,10 +8383,10 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
+                 canChangeRadius = false;
+                 if (AndroidUtilities.isTablet()) {
+-                    backgroundWidth = Math.min(AndroidUtilities.getMinTabletSide() - dp(50 + (isSideMenued ? ChatActivity.SIDE_MENU_WIDTH : drawAvatar ? 52 : 0)), dp(270));
++                    backgroundWidth = Math.min(AndroidUtilities.getMinTabletSide() - dp((desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 34 : 50) + (isSideMenued ? ChatActivity.SIDE_MENU_WIDTH : drawAvatar ? 52 : 0)), dp(desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 286 : 270));
                  } else {
--                    backgroundWidth = Math.min(AndroidUtilities.displaySize.x - AndroidUtilities.dp(isChat && messageObject.needDrawAvatar() && !messageObject.isOutOwner() ? 102 : 50), AndroidUtilities.dp(270));
-+                    backgroundWidth = Math.min(AndroidUtilities.displaySize.x - AndroidUtilities.dp(isChat && messageObject.needDrawAvatar() && !messageObject.isOutOwner() ? (desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 86 : 102) : (desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 34 : 50)), AndroidUtilities.dp(desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 286 : 270));
-@@ -2980,3 +2980,3 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
--                    backgroundWidth = Math.min(AndroidUtilities.getMinTabletSide() - AndroidUtilities.dp(isChat && messageObject.needDrawAvatar() && !messageObject.isOutOwner() ? 102 : 50), AndroidUtilities.dp(270));
-+                    backgroundWidth = Math.min(AndroidUtilities.getMinTabletSide() - AndroidUtilities.dp(isChat && messageObject.needDrawAvatar() && !messageObject.isOutOwner() ? (desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 86 : 102) : (desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 34 : 50)), AndroidUtilities.dp(desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 286 : 270));
-                 } else {
--                    backgroundWidth = Math.min(AndroidUtilities.displaySize.x - AndroidUtilities.dp(isChat && messageObject.needDrawAvatar() && !messageObject.isOutOwner() ? 102 : 50), AndroidUtilities.dp(270));
-+                    backgroundWidth = Math.min(AndroidUtilities.displaySize.x - AndroidUtilities.dp(isChat && messageObject.needDrawAvatar() && !messageObject.isOutOwner() ? (desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 86 : 102) : (desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 34 : 50)), AndroidUtilities.dp(desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 286 : 270));
-@@ -3052,3 +3052,3 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
--                    backgroundWidth = Math.min(AndroidUtilities.getMinTabletSide() - AndroidUtilities.dp(isChat && messageObject.needDrawAvatar() && !messageObject.isOutOwner() ? 102 : 50), AndroidUtilities.dp(270));
-+                    backgroundWidth = Math.min(AndroidUtilities.getMinTabletSide() - AndroidUtilities.dp(isChat && messageObject.needDrawAvatar() && !messageObject.isOutOwner() ? (desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 86 : 102) : (desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 34 : 50)), AndroidUtilities.dp(desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 286 : 270));
-                 } else {
--                    backgroundWidth = Math.min(AndroidUtilities.displaySize.x - AndroidUtilities.dp(isChat && messageObject.needDrawAvatar() && !messageObject.isOutOwner() ? 102 : 50), AndroidUtilities.dp(270));
-+                    backgroundWidth = Math.min(AndroidUtilities.displaySize.x - AndroidUtilities.dp(isChat && messageObject.needDrawAvatar() && !messageObject.isOutOwner() ? (desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 86 : 102) : (desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 34 : 50)), AndroidUtilities.dp(desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 286 : 270));
-@@ -3066,3 +3066,3 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
--                    backgroundWidth = Math.min(AndroidUtilities.getMinTabletSide() - AndroidUtilities.dp(isChat && messageObject.needDrawAvatar() && !messageObject.isOutOwner() ? 102 : 50), AndroidUtilities.dp(270));
-+                    backgroundWidth = Math.min(AndroidUtilities.getMinTabletSide() - AndroidUtilities.dp(isChat && messageObject.needDrawAvatar() && !messageObject.isOutOwner() ? (desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 86 : 102) : (desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 34 : 50)), AndroidUtilities.dp(desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 286 : 270));
-                 } else {
--                    backgroundWidth = Math.min(AndroidUtilities.displaySize.x - AndroidUtilities.dp(isChat && messageObject.needDrawAvatar() && !messageObject.isOutOwner() ? 102 : 50), AndroidUtilities.dp(270));
-+                    backgroundWidth = Math.min(AndroidUtilities.displaySize.x - AndroidUtilities.dp(isChat && messageObject.needDrawAvatar() && !messageObject.isOutOwner() ? (desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 86 : 102) : (desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 34 : 50)), AndroidUtilities.dp(desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 286 : 270));
-@@ -3103,3 +3103,3 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
--                        backgroundWidth = Math.min(AndroidUtilities.getMinTabletSide() - AndroidUtilities.dp(isChat && messageObject.needDrawAvatar() && !messageObject.isOutOwner() ? 102 : 50), AndroidUtilities.dp(270));
-+                        backgroundWidth = Math.min(AndroidUtilities.getMinTabletSide() - AndroidUtilities.dp(isChat && messageObject.needDrawAvatar() && !messageObject.isOutOwner() ? (desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 86 : 102) : (desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 34 : 50)), AndroidUtilities.dp(desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 286 : 270));
-                     } else {
--                        backgroundWidth = Math.min(AndroidUtilities.displaySize.x - AndroidUtilities.dp(isChat && messageObject.needDrawAvatar() && !messageObject.isOutOwner() ? 102 : 50), AndroidUtilities.dp(270));
-+                        backgroundWidth = Math.min(AndroidUtilities.displaySize.x - AndroidUtilities.dp(isChat && messageObject.needDrawAvatar() && !messageObject.isOutOwner() ? (desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 86 : 102) : (desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 34 : 50)), AndroidUtilities.dp(desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 286 : 270));
-@@ -3140,3 +3140,3 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
--                            backgroundWidth = Math.min(AndroidUtilities.getMinTabletSide() - AndroidUtilities.dp(isChat && messageObject.needDrawAvatar() && !messageObject.isOutOwner() ? 102 : 50), AndroidUtilities.dp(252 + 37));
-+                            backgroundWidth = Math.min(AndroidUtilities.getMinTabletSide() - AndroidUtilities.dp(isChat && messageObject.needDrawAvatar() && !messageObject.isOutOwner() ? (desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 86 : 102) : (desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 34 : 50)), AndroidUtilities.dp(252 + 37 + (desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 16 : 0)));
-                         } else {
--                            backgroundWidth = Math.min(AndroidUtilities.displaySize.x - AndroidUtilities.dp(isChat && messageObject.needDrawAvatar() && !messageObject.isOutOwner() ? 102 : 50), AndroidUtilities.dp(252 + 37));
-+                            backgroundWidth = Math.min(AndroidUtilities.displaySize.x - AndroidUtilities.dp(isChat && messageObject.needDrawAvatar() && !messageObject.isOutOwner() ? (desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 86 : 102) : (desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 34 : 50)), AndroidUtilities.dp(252 + 37 + (desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 16 : 0)));
-@@ -3190,3 +3190,3 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
--                            backgroundWidth = Math.min(AndroidUtilities.getMinTabletSide() - AndroidUtilities.dp(isChat && messageObject.needDrawAvatar() && !messageObject.isOutOwner() ? 102 : 50), AndroidUtilities.dp(252 + 37));
-+                            backgroundWidth = Math.min(AndroidUtilities.getMinTabletSide() - AndroidUtilities.dp(isChat && messageObject.needDrawAvatar() && !messageObject.isOutOwner() ? (desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 86 : 102) : (desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 34 : 50)), AndroidUtilities.dp(252 + 37 + (desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 16 : 0)));
-                         } else {
--                            backgroundWidth = Math.min(AndroidUtilities.displaySize.x - AndroidUtilities.dp(isChat && messageObject.needDrawAvatar() && !messageObject.isOutOwner() ? 102 : 50), AndroidUtilities.dp(252 + 37));
-+                            backgroundWidth = Math.min(AndroidUtilities.displaySize.x - AndroidUtilities.dp(isChat && messageObject.needDrawAvatar() && !messageObject.isOutOwner() ? (desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 86 : 102) : (desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 34 : 50)), AndroidUtilities.dp(252 + 37 + (desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 16 : 0)));
-@@ -3222,3 +3222,3 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
--                            backgroundWidth = Math.min(AndroidUtilities.getMinTabletSide() - AndroidUtilities.dp(isChat && messageObject.needDrawAvatar() && !messageObject.isOutOwner() ? 102 : 50), AndroidUtilities.dp(252 + 37));
-+                            backgroundWidth = Math.min(AndroidUtilities.getMinTabletSide() - AndroidUtilities.dp(isChat && messageObject.needDrawAvatar() && !messageObject.isOutOwner() ? (desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 86 : 102) : (desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 34 : 50)), AndroidUtilities.dp(252 + 37 + (desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 16 : 0)));
-                         } else {
--                            backgroundWidth = Math.min(AndroidUtilities.displaySize.x - AndroidUtilities.dp(isChat && messageObject.needDrawAvatar() && !messageObject.isOutOwner() ? 102 : 50), AndroidUtilities.dp(252 + 37));
-+                            backgroundWidth = Math.min(AndroidUtilities.displaySize.x - AndroidUtilities.dp(isChat && messageObject.needDrawAvatar() && !messageObject.isOutOwner() ? (desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 86 : 102) : (desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 34 : 50)), AndroidUtilities.dp(252 + 37 + (desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 16 : 0)));
-@@ -3316,3 +3316,3 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
--                            maxPhotoWidth = photoWidth = (int) (AndroidUtilities.getMinTabletSide() * 0.7f);
-+                            maxPhotoWidth = photoWidth = (int) (AndroidUtilities.getMinTabletSide() * (desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 0.76f : 0.7f));
-                         } else {
--                            maxPhotoWidth = photoWidth = (int) (Math.min(AndroidUtilities.displaySize.x, AndroidUtilities.displaySize.y) * 0.7f);
-+                            maxPhotoWidth = photoWidth = (int) (Math.min(AndroidUtilities.displaySize.x, AndroidUtilities.displaySize.y) * (desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 0.76f : 0.7f));
+-                    backgroundWidth = Math.min(getParentWidth() - dp(50 + (isSideMenued ? ChatActivity.SIDE_MENU_WIDTH : drawAvatar ? 52 : 0)), dp(270));
++                    backgroundWidth = Math.min(getParentWidth() - dp((desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 34 : 50) + (isSideMenued ? ChatActivity.SIDE_MENU_WIDTH : drawAvatar ? 52 : 0)), dp(desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() ? 286 : 270));
+                 }
