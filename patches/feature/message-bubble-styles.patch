@@ -69,21 +69,23 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/ActionBar/MessageDrawab
          }
 -        int smallRad = dp(6);
 +        int smallRad = dp(desu.inugram.InuConfig.IOS_MESSAGE_BUBBLES.getValue() ? 7 : desu.inugram.InuConfig.ROUNDED_MESSAGE_BUBBLES.getValue() ? 8 : 6);
-@@ -926,12 +944,18 @@ public class MessageDrawable extends Drawable {
-         Path path = new Path();
+@@ -929,12 +947,18 @@ public static class PathDrawParams {
          Rect lastRect = new Rect();
          boolean lastDrawFullTop;
          boolean lastDrawFullBottom;
+         boolean inu_lastTails = true;
 +        boolean inuLastIosStyle;
 +        boolean inuLastRounded;
  
          public boolean invalidatePath(Rect bounds, boolean drawFullBottom, boolean drawFullTop) {
--            boolean invalidate = lastRect.isEmpty() || lastRect.top != bounds.top || lastRect.bottom != bounds.bottom || lastRect.right != bounds.right || lastRect.left != bounds.left || lastDrawFullTop != drawFullTop || lastDrawFullBottom != drawFullBottom || !drawFullTop || !drawFullBottom;
+             boolean inu_tails = desu.inugram.InuConfig.BUBBLE_TAILS.getValue();
+-            boolean invalidate = lastRect.isEmpty() || lastRect.top != bounds.top || lastRect.bottom != bounds.bottom || lastRect.right != bounds.right || lastRect.left != bounds.left || lastDrawFullTop != drawFullTop || lastDrawFullBottom != drawFullBottom || !drawFullTop || !drawFullBottom || inu_lastTails != inu_tails;
 +            boolean inuIosStyle = desu.inugram.InuConfig.IOS_MESSAGE_BUBBLES.getValue();
 +            boolean inuRounded = desu.inugram.InuConfig.ROUNDED_MESSAGE_BUBBLES.getValue();
-+            boolean invalidate = lastRect.isEmpty() || lastRect.top != bounds.top || lastRect.bottom != bounds.bottom || lastRect.right != bounds.right || lastRect.left != bounds.left || lastDrawFullTop != drawFullTop || lastDrawFullBottom != drawFullBottom || !drawFullTop || !drawFullBottom || inuLastIosStyle != inuIosStyle || inuLastRounded != inuRounded;
++            boolean invalidate = lastRect.isEmpty() || lastRect.top != bounds.top || lastRect.bottom != bounds.bottom || lastRect.right != bounds.right || lastRect.left != bounds.left || lastDrawFullTop != drawFullTop || lastDrawFullBottom != drawFullBottom || !drawFullTop || !drawFullBottom || inu_lastTails != inu_tails || inuLastIosStyle != inuIosStyle || inuLastRounded != inuRounded;
              lastDrawFullTop = drawFullTop;
              lastDrawFullBottom = drawFullBottom;
+             inu_lastTails = inu_tails;
 +            inuLastIosStyle = inuIosStyle;
 +            inuLastRounded = inuRounded;
              lastRect.set(bounds);
