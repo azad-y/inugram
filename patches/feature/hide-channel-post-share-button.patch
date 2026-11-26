@@ -10,7 +10,7 @@ Subject: [PATCH] Add option to hide message share buttons
 diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.java b/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.java
 --- a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.java
 +++ b/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.java
-@@ -15829,5 +15829,6 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
+@@ -15829,4 +15829,5 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
      protected boolean checkNeedDrawShareButton(MessageObject messageObject) {
 +        if (desu.inugram.InuConfig.HIDE_CHANNEL_POST_SHARE_BUTTON.getValue()) return false;
          if (isReportChat) return false;
