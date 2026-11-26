@@ -462,3 +462,4 @@ feature/jalali-dates.patch
 debloat/hide-proxy-sponsor-channel.patch
 debloat/hide-sponsored-messages.patch
 feature/hide-reactions.patch
+feature/wide-message-bubbles.patch
