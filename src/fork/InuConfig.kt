@@ -826,6 +826,12 @@ object InuConfig {
     val WIDE_MESSAGE_BUBBLES = BoolItem("wide_message_bubbles", false)
 
     @JvmField
+    val IOS_MESSAGE_BUBBLES = BoolItem("ios_message_bubbles", false)
+
+    @JvmField
+    val ROUNDED_MESSAGE_BUBBLES = BoolItem("rounded_message_bubbles", false)
+
+    @JvmField
     val INTERACTIVE_CHAT_PREVIEW = BoolItem("disable_chat_preview_expand", true)
 
     @JvmField
