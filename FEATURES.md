@@ -88,7 +88,7 @@ most things are toggleable in `Settings → Inugram`, with sensible opinionated 
 - "Refresh" in the sticker/emoji pack menu
 - edited-message display: compact pencil indicator and configurable primary timestamp
 - toggleable message bubble tails
-- 🐶 iOS-inspired message bubble style with larger corners
+- 🐶 iOS-inspired message bubble style: round corners, hooked tails and round grouped messages
 - 🐶 independently increase message bubble corner radius
 - 🐶 compact mode per chat type (channels, groups, private chats)
 - 🐶 jump-to-discussion button from comments

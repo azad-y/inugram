@@ -16,14 +16,19 @@ object BubbleStyleHelper {
             (if (InuConfig.ROUNDED_MESSAGE_BUBBLES.value) 2 else 0)
 
     @JvmStatic
+    fun isIos(): Boolean = InuConfig.IOS_MESSAGE_BUBBLES.value
+
+    @JvmStatic
     fun radius(): Int {
         val base = if (InuConfig.IOS_MESSAGE_BUBBLES.value) 18 else SharedConfig.bubbleRadius
         val extra = if (InuConfig.ROUNDED_MESSAGE_BUBBLES.value) 3 else 0
         return min(base + extra, MAX_RADIUS)
     }
 
+    /** corner joining grouped messages: stays round in the iOS style, except above bot buttons */
     @JvmStatic
-    fun nearRadius(): Int = min(tailRadius(), radius())
+    fun nearRadius(aboveBotButtons: Boolean): Int =
+        if (isIos() && !aboveBotButtons) radius() else min(tailRadius(), radius())
 
     @JvmStatic
     fun tailRadius(): Int {

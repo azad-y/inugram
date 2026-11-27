@@ -182,7 +182,7 @@
     <string name="InuWideMessageBubbles">حباب پیام عریض‌تر</string>
     <string name="InuWideMessageBubblesInfo">با فعال‌کردن این گزینه، حباب پیام‌ها کمی عریض‌تر می‌شود و حاشیهٔ کناری صفحه حفظ می‌شود.</string>
     <string name="InuIosMessageBubbles">حباب پیام به سبک iOS</string>
-    <string name="InuIosMessageBubblesInfo">گوشه‌های حباب پیام را گردتر و به ظاهر iOS نزدیک می‌کند.</string>
+    <string name="InuIosMessageBubblesInfo">گوشه‌ها و دُم حباب پیام را شبیه ظاهر iOS می‌کند.</string>
     <string name="InuRoundedMessageBubbles">حباب پیام گردتر</string>
     <string name="InuRoundedMessageBubblesInfo">شعاع گوشه‌های حباب پیام را افزایش می‌دهد.</string>
     <string name="InuMiscPreviewForwardedFrom">سگی</string>

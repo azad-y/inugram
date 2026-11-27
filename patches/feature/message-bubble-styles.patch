@@ -4,9 +4,9 @@ Date: Thu, 26 Nov 2026 19:00:00 +0330
 Subject: [PATCH] Add iOS-style and rounded message bubble options
 
 ---
- .../org/telegram/ui/ActionBar/MessageDrawable.java | 48 ++++++++++++++++------
- .../org/telegram/ui/Cells/ChatMessageCell.java     |  8 ++--
- 2 files changed, 39 insertions(+), 17 deletions(-)
+ .../org/telegram/ui/ActionBar/MessageDrawable.java | 69 ++++++++++++++++++----
+ .../org/telegram/ui/Cells/ChatMessageCell.java     | 21 ++++---
+ 2 files changed, 69 insertions(+), 21 deletions(-)
 
 diff --git a/TMessagesProj/src/main/java/org/telegram/ui/ActionBar/MessageDrawable.java b/TMessagesProj/src/main/java/org/telegram/ui/ActionBar/MessageDrawable.java
 index 0000000..0000000 100644
@@ -91,7 +91,7 @@ index 0000000..0000000 100644
 -            rad = AndroidUtilities.lerp(dp(SharedConfig.bubbleRadius), Math.min(bounds.width(), bounds.height()) / 2, overrideRounding);
 -            nearRad = AndroidUtilities.lerp(dp(Math.min(6, SharedConfig.bubbleRadius)), Math.min(bounds.width(), bounds.height()) / 2, overrideRounding);
 +            rad = AndroidUtilities.lerp(dp(desu.inugram.helpers.chat.BubbleStyleHelper.radius()), Math.min(bounds.width(), bounds.height()) / 2, overrideRounding);
-+            nearRad = AndroidUtilities.lerp(dp(desu.inugram.helpers.chat.BubbleStyleHelper.nearRadius()), Math.min(bounds.width(), bounds.height()) / 2, overrideRounding);
++            nearRad = AndroidUtilities.lerp(dp(desu.inugram.helpers.chat.BubbleStyleHelper.nearRadius(botButtonsBottom)), Math.min(bounds.width(), bounds.height()) / 2, overrideRounding);
          } else if (currentType == TYPE_PREVIEW) {
              rad = dp(6);
              nearRad = dp(6);
@@ -99,7 +99,7 @@ index 0000000..0000000 100644
 -            rad = dp(SharedConfig.bubbleRadius);
 -            nearRad = dp(Math.min(6, SharedConfig.bubbleRadius));
 +            rad = dp(desu.inugram.helpers.chat.BubbleStyleHelper.radius());
-+            nearRad = dp(desu.inugram.helpers.chat.BubbleStyleHelper.nearRadius());
++            nearRad = dp(desu.inugram.helpers.chat.BubbleStyleHelper.nearRadius(botButtonsBottom));
          }
 -        int smallRad = dp(6);
 +        int smallRad = dp(desu.inugram.helpers.chat.BubbleStyleHelper.tailRadius());
@@ -113,7 +113,7 @@ index 0000000..0000000 100644
 -            rad = AndroidUtilities.lerp(dp(SharedConfig.bubbleRadius), Math.min(bounds.width(), bounds.height()) / 2, overrideRounding);
 -            nearRad = AndroidUtilities.lerp(dp(Math.min(6, SharedConfig.bubbleRadius)), Math.min(bounds.width(), bounds.height()) / 2, overrideRounding);
 +            rad = AndroidUtilities.lerp(dp(desu.inugram.helpers.chat.BubbleStyleHelper.radius()), Math.min(bounds.width(), bounds.height()) / 2, overrideRounding);
-+            nearRad = AndroidUtilities.lerp(dp(desu.inugram.helpers.chat.BubbleStyleHelper.nearRadius()), Math.min(bounds.width(), bounds.height()) / 2, overrideRounding);
++            nearRad = AndroidUtilities.lerp(dp(desu.inugram.helpers.chat.BubbleStyleHelper.nearRadius(botButtonsBottom)), Math.min(bounds.width(), bounds.height()) / 2, overrideRounding);
          } else if (currentType == TYPE_PREVIEW) {
              rad = dp(6);
              nearRad = dp(6);
@@ -121,14 +121,76 @@ index 0000000..0000000 100644
 -            rad = dp(SharedConfig.bubbleRadius);
 -            nearRad = dp(Math.min(6, SharedConfig.bubbleRadius));
 +            rad = dp(desu.inugram.helpers.chat.BubbleStyleHelper.radius());
-+            nearRad = dp(desu.inugram.helpers.chat.BubbleStyleHelper.nearRadius());
++            nearRad = dp(desu.inugram.helpers.chat.BubbleStyleHelper.nearRadius(botButtonsBottom));
          }
 -        int smallRad = dp(6);
 +        int smallRad = dp(desu.inugram.helpers.chat.BubbleStyleHelper.tailRadius());
          int top = Math.max(bounds.top, 0);
          boolean drawFullBottom, drawFullTop;
          if (pathDrawCacheParams != null && bounds.height() < currentBackgroundHeight) {
-@@ -932,14 +951,17 @@ public class MessageDrawable extends Drawable {
+@@ -722,12 +741,25 @@ public class MessageDrawable extends Drawable {
+         return path;
+     }
+ 
++    // draws the side edge, the hooked tail and the return to the bottom edge; dir is 1 for outgoing
++    private void inu_iosTail(Path path, float edge, float bottom, int rad, int dir) {
++        path.lineTo(edge, bottom - rad);
++        path.cubicTo(edge, bottom - rad * .5f, edge + dir * dp(1), bottom - dp(3), edge + dir * dp(5.5f), bottom);
++        path.cubicTo(edge + dir * dp(2), bottom + dp(.5f), edge - dir * dp(2.5f), bottom, edge - dir * dp(5), bottom - dp(2.5f));
++        path.cubicTo(edge - dir * dp(8), bottom - dp(.8f), edge - dir * rad * .65f, bottom, edge - dir * rad, bottom);
++    }
++
+     private void generatePath(Path path, Rect bounds, int padding, int rad, int smallRad, int nearRad, int top, boolean drawFullBottom, boolean drawFullTop, boolean customPaint) {
+         path.rewind();
+         int heightHalf = (bounds.height() - padding) >> 1;
+         if (rad > heightHalf) {
+             rad = heightHalf;
+         }
++        boolean inu_ios = desu.inugram.helpers.chat.BubbleStyleHelper.isIos();
++        if (inu_ios && nearRad > heightHalf) {
++            nearRad = heightHalf;
++        }
++        boolean inu_hasIosTail = inu_ios && currentType == TYPE_TEXT && desu.inugram.InuConfig.BUBBLE_TAILS.getValue();
+         if (isOut) {
+             // LEFT-BOTTOM <- RIGHT-BOTTOM
+             if (drawFullBubble || currentType == TYPE_PREVIEW || customPaint || drawFullBottom) {
+@@ -736,6 +768,8 @@ public class MessageDrawable extends Drawable {
+                     path.moveTo(bounds.right - dp(8) - radToUse, bounds.bottom - padding);
+                 } else if (!desu.inugram.InuConfig.BUBBLE_TAILS.getValue()) {
+                     path.moveTo(bounds.right - dp(8) - (isBottomNear ? nearRad : rad), bounds.bottom - padding);
++                } else if (inu_hasIosTail) {
++                    path.moveTo(bounds.right - dp(8) - rad, bounds.bottom - padding);
+                 } else {
+                     path.moveTo(bounds.right - dp(2.6f), bounds.bottom - padding);
+                 }
+@@ -791,6 +825,8 @@ public class MessageDrawable extends Drawable {
+                         path.lineTo(bounds.right - dp(8), bounds.bottom - padding - radToUse);
+                         rect.set(bounds.right - dp(8) - radToUse * 2, bounds.bottom - padding - radToUse * 2, bounds.right - dp(8), bounds.bottom - padding);
+                         path.arcTo(rect, 0, 90, false);
++                    } else if (inu_hasIosTail) {
++                        inu_iosTail(path, bounds.right - dp(8), bounds.bottom - padding, rad, 1);
+                     } else {
+                     path.lineTo(bounds.right - dp(8), bounds.bottom - padding - smallRad - dp(3));
+                     rect.set(bounds.right - dp(8), bounds.bottom - padding - smallRad * 2 - dp(9), bounds.right - dp(7) + smallRad * 2, bounds.bottom - padding - dp(1));
+@@ -808,6 +844,8 @@ public class MessageDrawable extends Drawable {
+                     path.moveTo(bounds.left + dp(8) + radToUse, bounds.bottom - padding);
+                 } else if (!desu.inugram.InuConfig.BUBBLE_TAILS.getValue()) {
+                     path.moveTo(bounds.left + dp(8) + (isBottomNear || botButtonsBottom ? nearRad : rad), bounds.bottom - padding);
++                } else if (inu_hasIosTail) {
++                    path.moveTo(bounds.left + dp(8) + rad, bounds.bottom - padding);
+                 } else {
+                     path.moveTo(bounds.left + dp(2.6f), bounds.bottom - padding);
+                 }
+@@ -857,6 +895,8 @@ public class MessageDrawable extends Drawable {
+                         path.lineTo(bounds.left + dp(8), bounds.bottom - padding - radToUse);
+                         rect.set(bounds.left + dp(8), bounds.bottom - padding - radToUse * 2, bounds.left + dp(8) + radToUse * 2, bounds.bottom - padding);
+                         path.arcTo(rect, 180, -90, false);
++                    } else if (inu_hasIosTail) {
++                        inu_iosTail(path, bounds.left + dp(8), bounds.bottom - padding, rad, -1);
+                     } else {
+                     path.lineTo(bounds.left + dp(8), bounds.bottom - padding - smallRad - dp(3));
+                     rect.set(bounds.left + dp(7) - smallRad * 2, bounds.bottom - padding - smallRad * 2 - dp(9), bounds.left + dp(8), bounds.bottom - padding - dp(1));
+@@ -932,14 +972,17 @@ public class MessageDrawable extends Drawable {
          boolean lastDrawFullTop;
          boolean lastDrawFullBottom;
          boolean inu_lastTails = true;
@@ -151,7 +213,41 @@ diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.j
 index 0000000..0000000 100644
 --- a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.java
 +++ b/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.java
-@@ -12306,9 +12306,9 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
+@@ -10252,7 +10252,12 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
+                 } else {
+                     rad = dp(SharedConfig.bubbleRadius);
+                 }
++                if (desu.inugram.helpers.chat.BubbleStyleHelper.isIos()) {
++                    rad = dp(desu.inugram.helpers.chat.BubbleStyleHelper.radius() - 2);
++                }
+                 int nearRad = Math.min(dp(3), rad);
++                // grouped media keeps round corners where the iOS-style bubble around it does
++                int inu_joinRad = desu.inugram.helpers.chat.BubbleStyleHelper.isIos() ? rad : nearRad;
+                 tl = tr = bl = br = rad;
+                 if (minRad > tl) {
+                     minRad = tl;
+@@ -10292,16 +10297,16 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
+                 }
+                 if (pinnedTop && (captionLayout == null || !captionAbove)) {
+                     if (currentMessageObject.isOutOwner()) {
+-                        tr = nearRad;
++                        tr = inu_joinRad;
+                     } else {
+-                        tl = nearRad;
++                        tl = inu_joinRad;
+                     }
+                 }
+                 if (pinnedBottom && (captionLayout == null || captionAbove)) {
+                     if (currentMessageObject.isOutOwner()) {
+-                        br = nearRad;
++                        br = inu_joinRad;
+                     } else {
+-                        bl = nearRad;
++                        bl = inu_joinRad;
+                     }
+                 }
+                 if (!mediaBackground && !currentMessageObject.isOutOwner()) {
+@@ -12306,9 +12311,9 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
  //        if (currentMessageObject != null && currentMessageObject.type == MessageObject.TYPE_ARTICLE) {
  //            pad += dp(4);
  //        }
@@ -163,7 +259,7 @@ index 0000000..0000000 100644
              pad += dp(1);
          }
          return pad;
-@@ -12319,8 +12319,8 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
+@@ -12319,8 +12324,8 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
              // no bubble corner to clear: the time keeps the same 16dp edge as the text
              return 0;
          }
