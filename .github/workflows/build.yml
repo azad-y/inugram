@@ -30,7 +30,7 @@ on:
       - '.github/**'
       - '!.github/workflows/build.yml'
   push:
-    branches: [main, next, fa, wide-bubbles-fix]
+    branches: [main, next, fa]
     paths-ignore:
       - '**.md'
       - '.github/**'
