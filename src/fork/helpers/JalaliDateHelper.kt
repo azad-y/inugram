@@ -84,10 +84,15 @@ object JalaliDateHelper {
         return digits("${p[0]}/${two(p[1])}/${two(p[2])}")
     }
 
-    /** Jalali year as text, or the given Gregorian year while the setting is off */
+    /** whether [ms] falls in the current Jalali year, or [gregorian] while the setting is off */
     @JvmStatic
-    fun yearOr(ms: Long, gregorianYear: Int): String {
-        if (!enabled()) return gregorianYear.toString()
-        return digits(parts(ms)[0].toString())
+    fun isThisYear(ms: Long, gregorian: Boolean): Boolean {
+        if (!enabled()) return gregorian
+        return parts(ms)[0] == parts(System.currentTimeMillis())[0]
     }
+
+    /** "21 آبان", with the year added when [forceYear] or when it is not the current Jalali year */
+    @JvmStatic
+    fun smallDate(ms: Long, forceYear: Boolean): String? =
+        if (!forceYear && isThisYear(ms, true)) dayMonth(ms) else fullDate(ms)
 }
