@@ -30,6 +30,7 @@ most things are toggleable in `Settings → Inugram`, with sensible opinionated 
 - fonts: manage a list of fonts used in the media editor text tool; device system fonts can be toggled on/off. install fonts from .ttf/.otf/.ttc files right from the chats (whole family at once when sent as an album).
 - extra meme-style outlined text style in the media editor text tool
 - 🐶 app-font *stack*: pick a user-provided TTF/OTF/TTC family as the whole-app font, optionally with fallbacks (e.g. for other scripts)
+- bundled Vazirmatn font, set as the app font on first launch unless another font was already chosen (applies on Android 9+)
 - 🐶 separate monospace font: pick any roster font for code blocks (inline + pre), previewed live alongside the stack
 - 🐶 hide fade views
 - 🐶 old (pre-12.6) mention/reaction indicator

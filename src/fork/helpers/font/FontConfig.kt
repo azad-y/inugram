@@ -90,7 +90,7 @@ object FontConfig {
     // include device system fonts (e.g. Google Sans, Coming Soon) in the editor roster + app font list
     val FONT_INCLUDE_SYSTEM = BoolItem("font_include_system", false)
 
-    // set once the bundled Vazirmatn font has been offered as the default app font (see VazirmatnHelper)
+    // set once the bundled Vazirmatn font is installed as the default, or another choice already exists (see VazirmatnHelper)
     val VAZIRMATN_DEFAULT_APPLIED = BoolItem("vazirmatn_default_applied", false, false)
 
     // roster token of the font used for monospace blocks (inline code + pre); "" = stock monospace
