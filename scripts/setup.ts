@@ -243,14 +243,6 @@ if (ci) {
   await cloneUpstream(worktreeDir, commit, true)
   const repo = cd(worktreeDir)
   for (const entry of seriesEntries) {
-    if (entry === 'feature/hide-reactions.patch') {
-      step('Diagnostic: ReactionsLayoutInBubble.java before hide-reactions patch (lines 155-200)')
-      const reactionContext = await repo`sed -n '155,200p' TMessagesProj/src/main/java/org/telegram/ui/Components/Reactions/ReactionsLayoutInBubble.java`
-      step(reactionContext.stdout)
-      step('Diagnostic: ReactionsLayoutInBubble.java around reactionLineWidths (lines 325-385)')
-      const reactionHelperContext = await repo`sed -n '325,385p' TMessagesProj/src/main/java/org/telegram/ui/Components/Reactions/ReactionsLayoutInBubble.java`
-      step(reactionHelperContext.stdout)
-    }
     step(`Applying ${entry}`)
     await repo`git apply --index ${join(patchesDir, entry)}`
   }

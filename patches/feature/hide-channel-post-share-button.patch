@@ -4,15 +4,72 @@ Date: Thu, 26 Nov 2026 15:00:00 +0330
 Subject: [PATCH] Add option to hide message share buttons
 
 ---
- .../org/telegram/ui/Cells/ChatMessageCell.java | 1 +
- 1 file changed, 1 insertion(+)
+ .../main/java/org/telegram/messenger/MessageObject.java    | 14 ++++++++++++--
+ .../main/java/org/telegram/ui/Cells/ChatMessageCell.java   |  1 +
+ 2 files changed, 13 insertions(+), 2 deletions(-)
 
+diff --git a/TMessagesProj/src/main/java/org/telegram/messenger/MessageObject.java b/TMessagesProj/src/main/java/org/telegram/messenger/MessageObject.java
+index 0000000..0000000 100644
+--- a/TMessagesProj/src/main/java/org/telegram/messenger/MessageObject.java
++++ b/TMessagesProj/src/main/java/org/telegram/messenger/MessageObject.java
+@@ -360,6 +360,7 @@ public class MessageObject {
+     private float generatedWithDensity;
+     private boolean generatedWithCompactMode;
+     private boolean inu_generatedWithWideBubbles;
++    private boolean inu_generatedWithHiddenShare;
+     private float generatedWithFontSize;
+     public boolean wasJustSent;
+     public boolean isBotPendingDraft;
+@@ -7112,7 +7113,7 @@ public class MessageObject {
+             // A rich message fills its max width, so any change of it must regenerate the layout
+             // (e.g. a Fold's inner tablet chat pane is only ~18dp wider than its cover screen).
+             final int tolerance = type == TYPE_ARTICLE ? 0 : dp(52);
+-            if (Math.abs(generatedWithMinSize - newMinSize) > tolerance || generatedWithDensity != AndroidUtilities.density || generatedWithFontSize != newFontSize || generatedWithCompactMode != isCompactMode() || inu_generatedWithWideBubbles != desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue()) {
++            if (Math.abs(generatedWithMinSize - newMinSize) > tolerance || generatedWithDensity != AndroidUtilities.density || generatedWithFontSize != newFontSize || generatedWithCompactMode != isCompactMode() || inu_generatedWithWideBubbles != desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue() || inu_generatedWithHiddenShare != desu.inugram.InuConfig.HIDE_CHANNEL_POST_SHARE_BUTTON.getValue()) {
+                 layoutCreated = false;
+             }
+         }
+@@ -8691,6 +8692,14 @@ public class MessageObject {
+         return hasUrls;
+     }
+ 
++    // only the share arrow is hidden: the same side button also jumps to the original message
++    public boolean inu_isShareButtonHidden() {
++        if (!desu.inugram.InuConfig.HIDE_CHANNEL_POST_SHARE_BUTTON.getValue() || isSaved || searchType == ChatActivity.SEARCH_PUBLIC_POSTS) {
++            return false;
++        }
++        return !(messageOwner.fwd_from != null && !isOutOwner() && messageOwner.fwd_from.saved_from_peer != null && getDialogId() == UserConfig.getInstance(currentAccount).getClientUserId());
++    }
++
+     public boolean needDrawShareButton() {
+         if (isRepostPreview) {
+             return false;
+@@ -8813,6 +8822,7 @@ public class MessageObject {
+         generatedWithFontSize = Theme.chat_msgTextPaint != null ? Theme.chat_msgTextPaint.getTextSize() : 0;
+         generatedWithCompactMode = isCompactMode();
+         inu_generatedWithWideBubbles = desu.inugram.InuConfig.WIDE_MESSAGE_BUBBLES.getValue();
++        inu_generatedWithHiddenShare = desu.inugram.InuConfig.HIDE_CHANNEL_POST_SHARE_BUTTON.getValue();
+         // compact mode: incoming messages span the whole chat with 16dp on each side
+         final boolean compactIn = generatedWithCompactMode && !isOutOwner();
+         final int compactSideMenuWidth = sideMenuEnabled ? dp(ChatActivity.SIDE_MENU_WIDTH) : 0;
+@@ -8853,7 +8863,7 @@ public class MessageObject {
+             } else if (needDrawAvatarInternal && !isOutOwner() && !messageOwner.isThreadMessage) {
+                 maxWidth -= dp(52);
+             }
+-            if (needDrawShareButton() && (isSaved || !isOutOwner())) {
++            if (needDrawShareButton() && (isSaved || !isOutOwner()) && !inu_isShareButtonHidden()) {
+                 maxWidth -= dp(isSaved && isOutOwner() ? 40 : 14);
+             }
+             if (getMedia(messageOwner) instanceof TLRPC.TL_messageMediaGame) {
 diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.java b/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.java
+index 0000000..0000000 100644
 --- a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.java
 +++ b/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.java
-@@ -15829,4 +15829,5 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
+@@ -15929,6 +15929,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
+     }
+ 
      protected boolean checkNeedDrawShareButton(MessageObject messageObject) {
-+        if (desu.inugram.InuConfig.HIDE_CHANNEL_POST_SHARE_BUTTON.getValue()) return false;
++        if (!isPinnedChat && messageObject.inu_isShareButtonHidden()) return false;
          if (isReportChat) return false;
          if (currentMessageObject.deleted && !currentMessageObject.deletedByThanos) return false;
          if (currentMessageObject.isSponsored()) return false;

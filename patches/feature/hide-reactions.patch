@@ -4,15 +4,16 @@ Date: Wed, 25 Nov 2026 00:00:00 +0000
 Subject: hide message, channel, reply and story reactions
 
 ---
- .../Reactions/ReactionsLayoutInBubble.java    | 32 ++++++++++++++++++++++++++++++++
- .../telegram/ui/Stories/PeerStoriesView.java  | 25 +++++++++++++++++++++++++
- 2 files changed, 57 insertions(+), 2 deletions(-)
+ .../Reactions/ReactionsLayoutInBubble.java         | 37 ++++++++++++++++++++++
+ .../ui/Components/ReactionsContainerLayout.java    |  5 +++
+ .../org/telegram/ui/Stories/PeerStoriesView.java   | 25 +++++++++++++--
+ 3 files changed, 65 insertions(+), 2 deletions(-)
 
 diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Components/Reactions/ReactionsLayoutInBubble.java b/TMessagesProj/src/main/java/org/telegram/ui/Components/Reactions/ReactionsLayoutInBubble.java
 index 0000000..0000000 100644
 --- a/TMessagesProj/src/main/java/org/telegram/ui/Components/Reactions/ReactionsLayoutInBubble.java
 +++ b/TMessagesProj/src/main/java/org/telegram/ui/Components/Reactions/ReactionsLayoutInBubble.java
-@@ -170,4 +170,16 @@
+@@ -174,6 +174,18 @@ public class ReactionsLayoutInBubble {
          reactionButtons.clear();
          if (messageObject != null) {
              currentAccount = messageObject.currentAccount;
@@ -29,12 +30,22 @@ index 0000000..0000000 100644
 +                return;
 +            }
              boolean forceLikeDislikeReactions = false; /*!messageObject.isOutOwner()
-@@ -367,1 +367,21 @@
+                     && !messageObject.isBotPendingDraft
+                     && BotForumHelper.isBotForum(currentAccount, messageObject.getDialogId())
+@@ -354,6 +366,31 @@ public class ReactionsLayoutInBubble {
+         return builder.toString();
+     }
+ 
 +    private boolean shouldHideMessageReactions(MessageObject messageObject) {
 +        if (messageObject == null || messageObject.messageOwner == null) {
 +            return false;
 +        }
-+        if (messageObject.messageOwner.reply_to != null
++        // a forum topic message points at its topic through reply_to without replying to anything
++        boolean isTopicMessage = messageObject.messageOwner.reply_to != null
++                && messageObject.messageOwner.reply_to.forum_topic
++                && (messageObject.messageOwner.reply_to.reply_to_top_id == 0
++                || messageObject.messageOwner.reply_to.reply_to_top_id == messageObject.messageOwner.reply_to.reply_to_msg_id);
++        if (messageObject.messageOwner.reply_to != null && !isTopicMessage
 +                && (messageObject.messageOwner.reply_to.reply_to_msg_id != 0
 +                || messageObject.messageOwner.reply_to.reply_to_top_id != 0
 +                || messageObject.messageOwner.reply_to.reply_to_random_id != 0)) {
@@ -51,11 +62,29 @@ index 0000000..0000000 100644
 +        return desu.inugram.InuConfig.HIDE_REACTIONS_MESSAGES.getValue();
 +    }
      public void measure(int availableWidth, int gravity) {
+         height = 0;
+         width = 0;
+diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Components/ReactionsContainerLayout.java b/TMessagesProj/src/main/java/org/telegram/ui/Components/ReactionsContainerLayout.java
+index 0000000..0000000 100644
+--- a/TMessagesProj/src/main/java/org/telegram/ui/Components/ReactionsContainerLayout.java
++++ b/TMessagesProj/src/main/java/org/telegram/ui/Components/ReactionsContainerLayout.java
+@@ -1155,6 +1155,11 @@ public class ReactionsContainerLayout extends FrameLayout implements Notificatio
+ 
+     public void setMessage(MessageObject message, TLRPC.ChatFull chatFull, boolean animated) {
+         this.messageObject = message;
++        setVisibility(View.VISIBLE);
++        if (type == TYPE_DEFAULT && desu.inugram.InuConfig.HIDE_QUICK_REACTION_PICKER.getValue()) {
++            setVisibility(View.GONE);
++            return;
++        }
+         int chosenCount = 0;
+         if (messageObject != null && messageObject.messageOwner != null && messageObject.messageOwner.reactions != null) {
+             for (TLRPC.ReactionCount reactionCount : messageObject.messageOwner.reactions.results) {
 diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Stories/PeerStoriesView.java b/TMessagesProj/src/main/java/org/telegram/ui/Stories/PeerStoriesView.java
 index 0000000..0000000 100644
 --- a/TMessagesProj/src/main/java/org/telegram/ui/Stories/PeerStoriesView.java
 +++ b/TMessagesProj/src/main/java/org/telegram/ui/Stories/PeerStoriesView.java
-@@ -2614,6 +2614,20 @@ public class PeerStoriesView extends FrameLayout {
+@@ -2554,6 +2554,20 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
      }
  
      private void showLikesReaction(boolean show) {
@@ -76,14 +105,18 @@ index 0000000..0000000 100644
          if (likesReactionShowing == show || currentStory.storyItem == null) {
              return;
          }
-@@ -4747,2 +4761,6 @@ public class PeerStoriesView extends FrameLayout {
+@@ -4686,6 +4700,10 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
+             repostCounter.setBounds(0, 0, getMeasuredWidth(), AndroidUtilities.dp(40));
+         }
          super.dispatchDraw(canvas);
 +        if (desu.inugram.InuConfig.HIDE_REACTIONS_STORIES.getValue()) {
 +            movingReaction = false;
 +            drawReactionEffect = false;
 +        }
          if (movingReaction) {
-@@ -5584,13 +5602,13 @@ public class PeerStoriesView extends FrameLayout {
+             float cX = bottomActionsLinearLayout.getX() + likeButtonContainer.getX() + likeButtonContainer.getMeasuredWidth() / 2f;
+             float cY = bottomActionsLinearLayout.getY() + likeButtonContainer.getY() + likeButtonContainer.getMeasuredHeight() / 2f;
+@@ -5527,13 +5545,13 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
              if (repostButtonContainer != null) {
                  repostButtonContainer.setVisibility(allowRepost && !currentStory.isLive ? View.VISIBLE : View.GONE);
              }
@@ -99,7 +132,7 @@ index 0000000..0000000 100644
              likeButtonContainer.getLayoutParams().width = AndroidUtilities.dp(40);
          }
          likeButtonContainer.requestLayout();
-@@ -8086,4 +8104,7 @@ public class PeerStoriesView extends FrameLayout {
+@@ -8036,6 +8054,9 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
      }
  
      void checkReactionsLayoutForLike() {
@@ -107,16 +140,5 @@ index 0000000..0000000 100644
 +            return;
 +        }
          if (likesReactionLayout == null) {
-
-diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Components/ReactionsContainerLayout.java b/TMessagesProj/src/main/java/org/telegram/ui/Components/ReactionsContainerLayout.java
-index ee832dc7..ee832dc7 100644
---- a/TMessagesProj/src/main/java/org/telegram/ui/Components/ReactionsContainerLayout.java
-+++ b/TMessagesProj/src/main/java/org/telegram/ui/Components/ReactionsContainerLayout.java
-@@ -1144,2 +1144,7 @@ public void setMessage(MessageObject message, TLRPC.ChatFull chatFull, boolean animated) {
-         this.messageObject = message;
-+        setVisibility(View.VISIBLE);
-+        if (type == TYPE_DEFAULT && desu.inugram.InuConfig.HIDE_QUICK_REACTION_PICKER.getValue()) {
-+            setVisibility(View.GONE);
-+            return;
-+        }
-         int chosenCount = 0;
+             likesReactionLayout = new ReactionsContainerLayout(ReactionsContainerLayout.TYPE_STORY_LIKES, LaunchActivity.getLastFragment(), getContext(), currentAccount, new WrappedResourceProvider(resourcesProvider) {
+                 @Override
