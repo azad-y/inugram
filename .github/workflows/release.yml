@@ -3,48 +3,64 @@ name: release
 on:
   workflow_dispatch:
     inputs:
-      skip-changelog-check:
-        description: Allow release without a changelog
-        type: boolean
-        default: false
+      version:
+        description: Build number, e.g. 70 (empty = last release + 1)
+        type: string
+        default: ''
+      changelog:
+        description: Changes, separated by |
+        type: string
+        required: true
 
 concurrency:
   group: release-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
-  changelog:
+  prepare:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    outputs:
+      build-num: ${{ steps.version.outputs.build-num }}
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
-        if: ${{ !inputs.skip-changelog-check }}
-        with:
-          sparse-checkout: changelogs
-
-      - name: check changelog
-        if: ${{ !inputs.skip-changelog-check }}
+      - name: resolve version
+        id: version
         env:
-          INU_BUILD: ${{ vars.INU_BUILD || '1' }}
+          GH_TOKEN: ${{ github.token }}
+          REQUESTED: ${{ inputs.version }}
         run: |
-          if [ ! -f "changelogs/$INU_BUILD.md" ]; then
-            echo "::error::changelogs/$INU_BUILD.md is missing"
+          set -o pipefail
+          releases=$(gh api "repos/$GITHUB_REPOSITORY/releases" --paginate --jq '.[] | "\(.tag_name) \(.target_commitish)"')
+          read -r last target < <(sed -n 's/^v[^ ]*-\([0-9][0-9]*\) \(.*\)$/\1 \2/p' <<< "$releases" | sort -n | tail -n1) || true
+          last=${last:-0}
+          if [ -n "$REQUESTED" ]; then
+            num=$REQUESTED
+          elif [ "$target" = "$GITHUB_SHA" ]; then
+            num=$last
+          else
+            num=$((last + 1))
+          fi
+          if ! [[ $num =~ ^[1-9][0-9]{0,7}$ ]]; then
+            echo "::error::version must be a whole number, got '$num'"
             exit 1
           fi
-
-      - name: bypass changelog check
-        if: ${{ inputs.skip-changelog-check }}
-        run: echo '::warning::changelog check explicitly bypassed'
+          if (( num < last )) || { (( num == last )) && [ "$target" != "$GITHUB_SHA" ]; }; then
+            echo "::error::version $num must be greater than the last release ($last)"
+            exit 1
+          fi
+          echo "releasing build $num"
+          echo "build-num=$num" >> "$GITHUB_OUTPUT"
 
   build:
-    needs: changelog
+    needs: prepare
     uses: ./.github/workflows/build.yml
     secrets: inherit
     permissions:
       contents: read
     with:
       artifact-name: inugram-${{ github.sha }}
+      build-num: ${{ needs.prepare.outputs.build-num }}
 
   sign:
     needs: build
@@ -124,10 +140,6 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
-        with:
-          sparse-checkout: changelogs
-
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: inugram-${{ github.sha }}
@@ -137,13 +149,10 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
+          CHANGELOG: ${{ inputs.changelog }}
         run: |
           tag='${{ needs.build.outputs.tag }}'
-          notes=(--generate-notes)
-          changelog='changelogs/${{ needs.build.outputs.build-num }}.md'
-          if [ -f "$changelog" ]; then
-            notes=(--notes-file "$changelog")
-          fi
+          tr '|' '\n' <<< "$CHANGELOG" | sed 's/^[[:space:]]*//; s/[[:space:]]*$//; s/^[-*•][[:space:]]*//; /^$/d; s/^/- /' > notes.md
           apks=('out/${{ needs.build.outputs.apk-full-name }}' 'out/${{ needs.build.outputs.apk-pluginless-name }}')
           if target=$(gh release view "$tag" --json targetCommitish --jq .targetCommitish 2>/dev/null); then
             if [ "$target" != "$GITHUB_SHA" ]; then
@@ -151,12 +160,12 @@ jobs:
               exit 1
             fi
             gh release upload "$tag" "${apks[@]}" --clobber
-            gh release edit "$tag" --draft=false
+            gh release edit "$tag" --draft=false --notes-file notes.md
           else
             gh release create "$tag" \
               --target "$GITHUB_SHA" \
               --title "$tag" \
-              "${notes[@]}" \
+              --notes-file notes.md \
               "${apks[@]}"
           fi
 
