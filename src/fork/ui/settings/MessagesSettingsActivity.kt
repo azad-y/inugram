@@ -402,18 +402,21 @@ class MessagesSettingsActivity : SettingsPageActivity() {
             TOGGLE_WIDE_MESSAGE_BUBBLES -> {
                 val new = InuConfig.WIDE_MESSAGE_BUBBLES.toggle()
                 (view as? NotificationsCheckCell)?.isChecked = new
+                miscPreview?.invalidate()
                 softRebuild()
             }
 
             TOGGLE_IOS_MESSAGE_BUBBLES -> {
                 val new = InuConfig.IOS_MESSAGE_BUBBLES.toggle()
                 (view as? NotificationsCheckCell)?.isChecked = new
+                miscPreview?.invalidate()
                 softRebuild()
             }
 
             TOGGLE_ROUNDED_MESSAGE_BUBBLES -> {
                 val new = InuConfig.ROUNDED_MESSAGE_BUBBLES.toggle()
                 (view as? NotificationsCheckCell)?.isChecked = new
+                miscPreview?.invalidate()
                 softRebuild()
             }
 

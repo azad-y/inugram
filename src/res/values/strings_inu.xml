@@ -182,7 +182,7 @@
     <string name="InuWideMessageBubbles">Wide message bubbles</string>
     <string name="InuWideMessageBubblesInfo">Allows message bubbles to use a little more horizontal space while keeping side margins.</string>
     <string name="InuIosMessageBubbles">iOS-style message bubbles</string>
-    <string name="InuIosMessageBubblesInfo">Uses iOS-inspired bubble corners, tails and grouping for messages.</string>
+    <string name="InuIosMessageBubblesInfo">Gives message bubbles larger, iOS-inspired corners.</string>
     <string name="InuRoundedMessageBubbles">Rounder message bubbles</string>
     <string name="InuRoundedMessageBubblesInfo">Increases the corner radius of message bubbles.</string>
     <string name="InuMiscPreviewForwardedFrom">doggo</string>

@@ -5,7 +5,8 @@ Subject: [PATCH] Add iOS-style and rounded message bubble options
 
 ---
  .../org/telegram/ui/ActionBar/MessageDrawable.java | 48 ++++++++++++++++------
- 1 file changed, 35 insertions(+), 13 deletions(-)
+ .../org/telegram/ui/Cells/ChatMessageCell.java     |  8 ++--
+ 2 files changed, 39 insertions(+), 17 deletions(-)
 
 diff --git a/TMessagesProj/src/main/java/org/telegram/ui/ActionBar/MessageDrawable.java b/TMessagesProj/src/main/java/org/telegram/ui/ActionBar/MessageDrawable.java
 index 0000000..0000000 100644
@@ -146,3 +147,30 @@ index 0000000..0000000 100644
              return invalidate;
          }
  
+diff --git a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.java b/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.java
+index 0000000..0000000 100644
+--- a/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.java
++++ b/TMessagesProj/src/main/java/org/telegram/ui/Cells/ChatMessageCell.java
+@@ -12306,9 +12306,9 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
+ //        if (currentMessageObject != null && currentMessageObject.type == MessageObject.TYPE_ARTICLE) {
+ //            pad += dp(4);
+ //        }
+-        if (SharedConfig.bubbleRadius >= 15) {
++        if (desu.inugram.helpers.chat.BubbleStyleHelper.radius() >= 15) {
+             pad += dp(2);
+-        } else if (SharedConfig.bubbleRadius >= 11) {
++        } else if (desu.inugram.helpers.chat.BubbleStyleHelper.radius() >= 11) {
+             pad += dp(1);
+         }
+         return pad;
+@@ -12319,8 +12319,8 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
+             // no bubble corner to clear: the time keeps the same 16dp edge as the text
+             return 0;
+         }
+-        if (!currentMessageObject.isOutOwner() && (!mediaBackground || captionLayout != null) && SharedConfig.bubbleRadius > 11) {
+-            return dp((SharedConfig.bubbleRadius - 11) / 1.5f);
++        if (!currentMessageObject.isOutOwner() && (!mediaBackground || captionLayout != null) && desu.inugram.helpers.chat.BubbleStyleHelper.radius() > 11) {
++            return dp((desu.inugram.helpers.chat.BubbleStyleHelper.radius() - 11) / 1.5f);
+         }
+         if (!currentMessageObject.isOutOwner() && isPlayingRound && isAvatarVisible && currentMessageObject.type == MessageObject.TYPE_ROUND_VIDEO) {
+             return (int) ((AndroidUtilities.roundPlayingMessageSize(isSideMenued, isCompactMode()) - AndroidUtilities.roundMessageSize) * 0.7f);
