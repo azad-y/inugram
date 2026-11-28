@@ -8,6 +8,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
+import java.util.Collections
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
@@ -19,8 +20,17 @@ import java.util.concurrent.atomic.AtomicInteger
  * or a plugin/provider configuration.
  */
 internal object GoogleTranslateHelper {
+    private class Call {
+        val futures: MutableList<Future<*>> = Collections.synchronizedList(mutableListOf())
+
+        /** set once, by whichever of success, failure or cancel comes first */
+        val finished = AtomicBoolean(false)
+
+        fun cancelFutures() = synchronized(futures) { futures.forEach { it.cancel(true) } }
+    }
+
     private val executor = Executors.newFixedThreadPool(4)
-    private val calls = ConcurrentHashMap<Long, MutableList<Future<*>>>()
+    private val calls = ConcurrentHashMap<Long, Call>()
 
     fun translate(
         account: Int,
@@ -36,16 +46,15 @@ internal object GoogleTranslateHelper {
         }
 
         val key = (account.toLong() shl 32) or (token.toLong() and 0xffffffffL)
-        val pending = java.util.Collections.synchronizedList(mutableListOf<Future<*>>())
-        calls[key] = pending
+        val call = Call()
+        calls[key] = call
         val results = arrayOfNulls<TLRPC.TL_textWithEntities>(texts.size)
         val remaining = AtomicInteger(texts.size)
-        val finished = AtomicBoolean(false)
 
         fun finishFailure(error: Throwable) {
-            if (!finished.compareAndSet(false, true)) return
-            calls.remove(key, pending)
-            synchronized(pending) { pending.forEach { it.cancel(true) } }
+            if (!call.finished.compareAndSet(false, true)) return
+            calls.remove(key, call)
+            call.cancelFutures()
             FileLog.e("Built-in Google translation failed", error)
             callback(null)
         }
@@ -54,6 +63,7 @@ internal object GoogleTranslateHelper {
             val future = executor.submit {
                 var connection: HttpURLConnection? = null
                 try {
+                    if (call.finished.get()) return@submit
                     val sourceLanguage = sourceLanguages.getOrNull(index)
                         ?.takeIf { it.isNotBlank() && it != "und" } ?: "auto"
                     val query = listOf(
@@ -61,18 +71,21 @@ internal object GoogleTranslateHelper {
                         "sl" to sourceLanguage,
                         "tl" to targetLanguage,
                         "dt" to "t",
-                        "q" to source.text.toString(),
-                    ).joinToString("&") { (name, value) ->
-                        "$name=${URLEncoder.encode(value, StandardCharsets.UTF_8.name())}"
-                    }
+                    ).joinToString("&") { (name, value) -> "$name=${encode(value)}" }
+                    // the text goes in the body: a long message does not fit in a url
+                    val form = "q=${encode(source.text.toString())}".toByteArray(StandardCharsets.UTF_8)
                     connection = (URL("https://translate.googleapis.com/translate_a/single?$query")
                         .openConnection() as HttpURLConnection).apply {
-                        requestMethod = "GET"
+                        requestMethod = "POST"
+                        doOutput = true
+                        setFixedLengthStreamingMode(form.size)
+                        setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8")
                         connectTimeout = 15000
                         readTimeout = 20000
                         setRequestProperty("Accept", "application/json")
                         setRequestProperty("User-Agent", "Mozilla/5.0")
                     }
+                    connection.outputStream.use { it.write(form) }
                     val status = connection.responseCode
                     val body = (if (status in 200..299) connection.inputStream else connection.errorStream)
                         ?.bufferedReader(StandardCharsets.UTF_8)?.use { it.readText() }.orEmpty()
@@ -95,8 +108,8 @@ internal object GoogleTranslateHelper {
                         // Source entity offsets are invalid after translation.
                         entities = ArrayList()
                     }
-                    if (remaining.decrementAndGet() == 0 && finished.compareAndSet(false, true)) {
-                        calls.remove(key, pending)
+                    if (remaining.decrementAndGet() == 0 && call.finished.compareAndSet(false, true)) {
+                        calls.remove(key, call)
                         callback(results.map { it ?: TLRPC.TL_textWithEntities() })
                     }
                 } catch (error: Exception) {
@@ -105,15 +118,19 @@ internal object GoogleTranslateHelper {
                     connection?.disconnect()
                 }
             }
-            pending.add(future)
-            if (finished.get()) future.cancel(true)
+            call.futures.add(future)
+            if (call.finished.get()) future.cancel(true)
         }
     }
 
     fun cancel(account: Int, token: Int): Boolean {
         val key = (account.toLong() shl 32) or (token.toLong() and 0xffffffffL)
-        val pending = calls.remove(key) ?: return false
-        synchronized(pending) { pending.forEach { it.cancel(true) } }
+        val call = calls.remove(key) ?: return false
+        // a request already on the wire cannot be interrupted, this keeps its answer from being delivered
+        call.finished.set(true)
+        call.cancelFutures()
         return true
     }
+
+    private fun encode(value: String): String = URLEncoder.encode(value, StandardCharsets.UTF_8.name())
 }

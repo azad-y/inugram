@@ -196,7 +196,7 @@ class TranslatorSettingsActivity : SettingsPageActivity() {
     private fun showProviderDialog() {
         val providers = PluginTranslation.providers
         val selected = InuConfig.TRANSLATION_PROVIDER.value
-        val items = listOf(RadioDialogBuilder.Item(LocaleController.getString(R.string.InuTranslationProviderTelegram))) +
+        val items = listOf(RadioDialogBuilder.Item(LocaleController.getString(R.string.InuTranslationProviderGoogle))) +
             providers.map { RadioDialogBuilder.Item(it.name, LocaleController.formatString(R.string.InuTranslationProviderFromPlugin, it.session.manifest.name)) }
         val selectedIndex = if (selected.isEmpty()) 0 else providers.indexOfFirst { it.key == selected }.let { if (it < 0) -1 else it + 1 }
         val dialog = RadioDialogBuilder(context, resourceProvider)
@@ -213,7 +213,7 @@ class TranslatorSettingsActivity : SettingsPageActivity() {
 
     private fun providerLabel(): String {
         val selected = InuConfig.TRANSLATION_PROVIDER.value
-        if (selected.isEmpty()) return LocaleController.getString(R.string.InuTranslationProviderTelegram)
+        if (selected.isEmpty()) return LocaleController.getString(R.string.InuTranslationProviderGoogle)
         return PluginTranslation.findProvider(selected)?.name
             ?: LocaleController.getString(R.string.InuTranslationProviderUnavailable)
     }

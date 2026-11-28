@@ -299,6 +299,7 @@
     <string name="InuTranslationTargetFollowApp">مطابق زبان برنامه</string>
     <string name="InuTranslationProvider">سرویس ترجمه</string>
     <string name="InuTranslationProviderTelegram">تلگرام</string>
+    <string name="InuTranslationProviderGoogle">Google Translate</string>
     <string name="InuTranslationProviderFromPlugin">از %1$s</string>
     <string name="InuTranslationProviderUnavailable">در دسترس نیست</string>
     <string name="InuTranslationProviderInfo">می‌توانید سرویس‌های ترجمه‌ی بیشتری را از طریق **افزونه‌ها >** نصب کنید</string>
@@ -1036,5 +1037,5 @@
     <string name="InuLinkedChatsAdd">افزودن به حساب</string>
     <string name="InuLinkedChatsRemove">حذف از این حساب</string>
     <string name="InuAutoTranslateChannels">ترجمهٔ خودکار کانال‌ها، گروه‌ها و نظرات پست‌ها</string>
-    <string name="InuAutoTranslateChannelsInfo">وقتی زبان پیام‌های یک گفتگو غیر فارسی تشخیص داده شود، ترجمه را فقط بار اول فعال می‌کند. وضعیت ترجمه یا نمایش متن اصلی برای هر کانال، گروه و گفتگوی نظرات جداگانه ذخیره می‌شود و با لمس نوار قابل تغییر است.</string>
+    <string name="InuAutoTranslateChannelsInfo">ترجمه را برای هر کانال، گروه و گفتگوی نظرات که به زبانی غیر از زبان مقصد ترجمه باشد، فقط بار اول روشن می‌کند. در این صورت پیام‌های آن‌ها، از جمله گروه‌های خصوصی، برای Google Translate یا سرویس ترجمهٔ انتخابی شما فرستاده می‌شود. هر گفتگو را می‌توانید از نوار ترجمهٔ خودش خاموش کنید.</string>
 </resources>

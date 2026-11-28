@@ -299,6 +299,7 @@
     <string name="InuTranslationTargetFollowApp">Follow app</string>
     <string name="InuTranslationProvider">Translation provider</string>
     <string name="InuTranslationProviderTelegram">Telegram</string>
+    <string name="InuTranslationProviderGoogle">Google Translate</string>
     <string name="InuTranslationProviderFromPlugin">from %1$s</string>
     <string name="InuTranslationProviderUnavailable">Unavailable</string>
     <string name="InuTranslationProviderInfo">You can install additional translation services as **Plugins >**</string>
@@ -1071,5 +1072,5 @@
     <string name="InuHideProxySponsorChannel">Hide proxy sponsor channel</string>
     <string name="InuHideSponsoredMessages">Hide sponsored messages in bots and video playback</string>
     <string name="InuAutoTranslateChannels">Automatically translate channels, groups and post comments</string>
-    <string name="InuAutoTranslateChannelsInfo">Automatically enables translation once per chat when its messages are detected as non-Persian. The Translate / Show Original bar remains independently switchable for each channel, group or post discussion.</string>
+    <string name="InuAutoTranslateChannelsInfo">Turns translation on once for each channel, group or post discussion written in another language than the one you translate to. Their messages, private groups included, are then sent to Google Translate or your selected translation provider. Each chat can be switched back from its translation bar.</string>
 </resources>

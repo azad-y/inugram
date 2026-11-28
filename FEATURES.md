@@ -289,7 +289,7 @@ most things are toggleable in `Settings → Inugram`, with sensible opinionated 
 - disable auto-play when opening the pinned music player on a profile
 
 
-- automatically translate broadcast-channel messages using the configured translation provider and target language
+- optional (off by default) automatic translation of channels, groups and post comments, using the selected translation provider (Google Translate unless a plugin provider is chosen) and target language
 
 ## 🐶 bugfixes (vs stock)
 
