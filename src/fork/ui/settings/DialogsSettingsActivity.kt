@@ -7,6 +7,7 @@ import desu.inugram.helpers.dialogs.DialogsFabHelper
 import desu.inugram.helpers.dialogs.FolderHelper
 import desu.inugram.helpers.InuUtils
 import org.telegram.messenger.LocaleController
+import org.telegram.messenger.MessagesController
 import org.telegram.messenger.MessagesStorage
 import org.telegram.messenger.NotificationCenter
 import org.telegram.messenger.R
@@ -223,6 +224,11 @@ class DialogsSettingsActivity : SettingsPageActivity() {
             TOGGLE_HIDE_PROXY_SPONSOR_CHANNEL -> {
                 val new = InuConfig.HIDE_PROXY_SPONSOR_CHANNEL.toggle()
                 (view as? TextCheckCell)?.isChecked = new
+                // the channel is left out while the list is sorted, so sort again
+                for (i in 0 until UserConfig.MAX_ACCOUNT_COUNT) {
+                    if (UserConfig.getInstance(i).isClientActivated) MessagesController.getInstance(i).sortDialogs(null)
+                }
+                postNotificationForAllAccounts(NotificationCenter.dialogsNeedReload)
                 softRebuild()
             }
 
